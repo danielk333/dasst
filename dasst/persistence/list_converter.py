@@ -15,7 +15,7 @@ import numpy as np
 
 #Local import
 from .converter import Converter
-from . import register_converter
+from .persistence import register_converter
 
 
 class ListConverter(Converter):

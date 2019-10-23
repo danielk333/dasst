@@ -12,7 +12,7 @@ from typing import NoReturn
 
 
 #Local import
-from . import Persistence
+from .persistence import Persistence
 
 
 class FileSystemBinary(Persistence):

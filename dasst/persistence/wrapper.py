@@ -9,6 +9,7 @@
 #Third party import
 
 #Local import
+from .logger import logger
 
 '''
 def XArrayCacheWrapper(path):
@@ -31,5 +32,4 @@ def XArrayCacheWrapper(path):
         return wrapped_func
 
     return XArrayCache
-
 '''

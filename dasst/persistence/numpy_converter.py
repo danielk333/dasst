@@ -14,9 +14,8 @@ import struct
 import numpy as np
 
 #Local import
-from .converter import Converter
-from .converter import unpack
-from . import register_converter
+from .converter import Converter, unpack
+from .persistence import register_converter
 
 
 class NumpyConverter(Converter):
