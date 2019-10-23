@@ -10,20 +10,26 @@
 
 #Local import
 
-def DataSaveWrapperGenerator(xdata_save, *args, **kwargs):
-    fargs = args
-    del args
-    fkwargs = kwargs
-    del kwargs
+'''
+def XArrayCacheWrapper(path):
 
-    def DataSaveWrapper(func):
+    def XArrayCache(func):
         
         def wrapped_func(*args, **kwargs):
+            
+            if exists
+            load
+
+            else
+
+
             ret = func(*args, **kwargs)
-            xdata_save(ret, *fargs, **fkwargs)
+            save
+
             return ret
 
         return wrapped_func
 
-    return DataSaveWrapper
+    return XArrayCache
 
+'''

@@ -10,12 +10,12 @@ from typing import NoReturn
 
 #Third party import
 
+
 #Local import
-from . import wrapper
 from . import Persistence
 
 
-class FileSystem(Persistence):
+class FileSystemBinary(Persistence):
 
     def __init__(self, path):
         self.path = path
