@@ -15,11 +15,10 @@ from dasst.persistence.file_system_binary import FileSystemBinary
 from dasst.persistence.numpy_converter import NumpyConverter
 from dasst.persistence.list_converter import ListConverter
 from dasst.persistence import register_converter
-from dasst.profiling import all_logger_levels, enable_all_logfiles
+from dasst.profiling import set_loggers
 
 
-enable_all_logfiles('./')
-all_logger_levels(level=10)
+set_loggers(level=10, logfile = './')
 
 
 class MyBase:

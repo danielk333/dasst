@@ -20,6 +20,14 @@ def unpack(fmt, bytes_data):
     return struct.unpack(fmt, bytes_data[:size]), bytes_data[size:]
 
 
+class ChainConverter:
+
+    def compile_bytes_stream(self, convert_chain):
+
+        for item, converter in convert_chain:
+            
+
+
 class Converter:
 
     @abstractmethod

@@ -48,6 +48,7 @@ def format_time_record():
 
     return str_
 
+
 def _add_recorded_time(name, dt):
     global EXECUTION_TIMES
     if name in EXECUTION_TIMES:
