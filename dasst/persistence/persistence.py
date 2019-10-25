@@ -26,7 +26,8 @@ def register_converter(cls, converter):
     if name not in PERSISTENT_OBJECTS:
         PERSISTENT_OBJECTS[name] = (cls, converter, len(PERSISTENT_OBJECTS))
     else:
-        logger.warning(f'Converter "{name}" already registered')
+        logger.warning(f'Converter "{name}" already registered, replacing')
+        PERSISTENT_OBJECTS[name] = (cls, converter, PERSISTENT_OBJECTS[name][2])
 
 
 class Persistence:
