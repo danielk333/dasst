@@ -6,20 +6,20 @@
 import sys
 from typing import Type
 import struct
+import os
 
 import numpy as np
 import xarray as xr
 
-from dasst.persistence.converter import Converter, unpack
-from dasst.persistence.file_system_binary import FileSystemBinary
-from dasst.persistence.numpy_converter import NumpyConverter
-from dasst.persistence.list_converter import ListConverter
-from dasst.persistence import register_converter
-from dasst.profiling import all_logger_levels, enable_all_logfiles
+from dasst.persistence import FileSystemBinary, GZipBinary
+from dasst.persistence import NumpyConverter
+from dasst.persistence import PickleConverter
+from dasst.persistence import register_converter, ChainConverter, Converter
+
+from dasst.profiling import set_loggers
 
 
-enable_all_logfiles('./')
-all_logger_levels(level=10)
+set_loggers(level=10, logfile = './')
 
 
 class MyBase:
@@ -43,38 +43,22 @@ class MyClass(MyBase):
 class MyClassConverter(Converter):
 
     def __init__(self):
-        self.npc = NumpyConverter()
-        self.metac = ListConverter()
+        self.converters = [NumpyConverter(), PickleConverter()]
+        self.chain = ChainConverter()
 
 
     def as_bytes(self, obj: Type[MyClass]) -> bytes:
-        byte_data = b''
-
-        npc_data = self.npc.as_bytes(obj.data)
-        byte_data += struct.pack('q', len(npc_data))
-        byte_data += npc_data
-
-        lst_data = self.metac.as_bytes([obj.num])
-        byte_data += struct.pack('q', len(lst_data))
-        byte_data += lst_data
-
-        return byte_data
+        objects = [obj.data, obj.num]
+        return self.chain.pack_bytes_stream(objects, self.converters)
 
 
     def from_bytes(self, bytes_data: bytes) -> MyClass:
-        
-        size, bytes_data = unpack('q', bytes_data)
-        npc_data = self.npc.from_bytes(bytes_data[:size[0]])
-        bytes_data = bytes_data[size[0]:]
+        objects = self.chain.unpack_bytes_stream(self.converters, bytes_data)
 
-        size, bytes_data = unpack('q', bytes_data)
-        lst_data = self.metac.from_bytes(bytes_data[:size[0]])
-
-        obj = MyClass(lst_data[0])
-        obj.data = npc_data
+        obj = MyClass(objects[1])
+        obj.data = objects[0]
 
         return obj
-
 
 register_converter(MyClass, MyClassConverter)
 
@@ -95,15 +79,21 @@ if __name__ == '__main__':
     print(data)
     print(new_data)
 
-    my_object = MyClass(100)
+    my_object = MyClass(1000)
     my_object.generate()
 
     fs = FileSystemBinary('test2.bin')
+    fs_compressed = GZipBinary('test2.gz', level=9)
 
     fs.save(my_object)
+    fs_compressed.save(my_object)
 
     new_object = fs.load()
+    new_object_comp = fs_compressed.load()
 
     print(my_object)
     print(new_object)
+    print(new_object_comp)
     
+    print(os.path.getsize(fs.path))
+    print(os.path.getsize(fs_compressed.path))

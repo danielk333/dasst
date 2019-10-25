@@ -35,14 +35,34 @@ def add_logging_level(num, name):
 logging.Logger.always = add_logging_level(100, 'ALWAYS')
 
 
-def all_logger_levels(level):
+def set_logger_level(logger, level):
+    logger.setLevel(level)
+    for handler in logger.handlers:
+        handler.setLevel(level)
+
+
+def set_logger(logger, **kwargs):
+    if 'level' in kwargs:
+        set_logger_level(logger, level=kwargs['level'])
+    if 'logpath' in kwargs:
+        if not isinstance(kwargs['logpath'], pathlib.Path):
+            kwargs['logpath'] = pathlib.Path(kwargs['logpath'])
+        enable_logfile(
+            logger = logger,
+            log_fname = kwargs['logpath'],
+            level = kwargs.get('file_level', logging.INFO),
+        )
+
+
+def set_loggers(**kwargs):
     for name, logger in LOGGERS.items():
-        logger.setLevel(level)
-        for handler in logger.handlers:
-            handler.setLevel(level)
+        set_logger(logger, **kwargs)
 
 
 def enable_logfile(logger, log_fname, level=logging.INFO):
+    if not isinstance(log_fname, pathlib.Path):
+        log_fname = pathlib.Path(log_fname)
+
     fh = logging.FileHandler(log_fname)
     fh.setLevel(level)
     form_fh = logging.Formatter(
@@ -52,14 +72,6 @@ def enable_logfile(logger, log_fname, level=logging.INFO):
     fh.setFormatter(form_fh)
     logger.addHandler(fh) #id 0
 
-
-def enable_all_logfiles(logpath, level=logging.INFO):
-    if not isinstance(logpath, pathlib.Path):
-        logpath = pathlib.Path(logpath)
-
-    for name, logger in LOGGERS.items():
-        logname = name.replace(' ', '_') + f'_PID{PROCESS_ID}.log'
-        enable_logfile(logger, logpath / logname, level)
 
 
 def register_logger(
