@@ -1,5 +1,7 @@
 @import url("nature.css");
 
+/* refer to https://github.com/sphinx-doc/sphinx/blob/master/sphinx/themes/nature/static/nature.css_t */
+
 div.related {
     background-color: #6699ff;
 }
