@@ -51,20 +51,20 @@ class Converter:
 
     @abstractmethod
     def as_bytes(self, obj: object) -> bytes:
-        '''Converts a object to a bytes stream.
+        '''Converts a object to a byte stream.
 
-            :param object obj: Object to be converted into a bytes stream representation
+            :param object obj: Object to be converted into a byte stream
             :rtype: bytes
-            :return: bytes stream representation of the object
+            :return: byte stream representation of the object
         '''
         pass
 
 
     @abstractmethod
     def from_bytes(self, byte_data: bytes) -> object:
-        '''Converts a bytes stream into a object.
+        '''Converts a byte stream into a object.
 
-            :param bytes byte_data: Bytes stream to be converted a object
+            :param bytes byte_data: byte stream to be converted into a object
             :rtype: object
             :return: Reconstructed object
         '''

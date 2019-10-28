@@ -19,12 +19,20 @@ from .persistence import register_converter
 
 
 class NumpyConverter(Converter):
-    '''
-    
-    Note: 10s strings because the longest dtype identifier is "complex128" which is 10 chars long
+    '''Converts numpy arrays to and from byte streams.
+
+    **Note:** Cannot handle structured numpy arrays.
     '''
 
     def as_bytes(self, obj: np.ndarray) -> bytes:
+        '''Converts a :py:class:`numpy.ndarray` instance to a byte stream.
+
+            See :func:`dasst.persistence.converter.Converter.as_bytes`.
+
+            :param numpy.ndarray obj: numpy array to be converted into a byte stream
+            :rtype: bytes
+            :return: byte stream representation of the numpy array
+        '''
         bytes_data = b''
         bytes_data += struct.pack('q', obj.ndim)
         bytes_data += struct.pack('c', obj.dtype.char.encode('utf-8'))
@@ -35,7 +43,14 @@ class NumpyConverter(Converter):
 
 
     def from_bytes(self, byte_data: bytes) -> np.ndarray:
+        '''Converts a byte stream into :py:class:`numpy.ndarray` instance.
 
+            See :func:`dasst.persistence.converter.Converter.from_bytes`.
+
+            :param bytes byte_data: byte stream to be converted into a numpy array
+            :rtype: numpy.ndarray
+            :return: reconstructed numpy array from byte stream
+        '''
         num, byte_data = unpack('q', byte_data)
         dtype, byte_data = unpack('c', byte_data)
         shape, byte_data = unpack(num[0]*'q', byte_data)

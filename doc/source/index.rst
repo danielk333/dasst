@@ -37,9 +37,8 @@ If you're interested in contributing to the project or need to implement functio
 API Reference
 -------------
 
-The exact API of all functions and classes:
-
 .. toctree::
+   :caption: API Reference
    :maxdepth: 2
 
    persistence
