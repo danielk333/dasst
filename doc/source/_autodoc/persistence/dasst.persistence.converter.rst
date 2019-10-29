@@ -1,9 +1,12 @@
-dasst.persistence.converter
+converter
 =====================================================================================
 
 .. automodule:: dasst.persistence.converter
 
 .. currentmodule:: dasst.persistence.converter
+
+Module summary
+--------------
 
 
 .. rubric:: Classes
@@ -26,5 +29,37 @@ dasst.persistence.converter
     
     unpack
     
+
+
+
+Contents
+----------
+
+
+
+
+.. rubric:: ChainConverter
+
+.. autoclass:: ChainConverter
+   :noindex:
+   :members:
+
+
+
+.. rubric:: Converter
+
+.. autoclass:: Converter
+   :noindex:
+   :members:
+
+
+
+
+
+.. rubric:: Functions
+
+
+.. autofunction:: unpack
+   :noindex:
 
 

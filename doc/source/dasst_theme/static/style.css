@@ -1,7 +1,42 @@
 @import url("nature.css");
 
-/* refer to https://github.com/sphinx-doc/sphinx/blob/master/sphinx/themes/nature/static/nature.css_t */
+/* refer to 
+
+https://github.com/sphinx-doc/sphinx/blob/master/sphinx/themes/nature/static/nature.css_t 
+
+*/
 
 div.related {
     background-color: #6699ff;
+    position: fixed;
+    top: 0px;
+}
+
+body {
+    background-color: #eee;
+}
+
+div.bodywrapper {
+    margin-top: 32px;
+}
+
+div.sphinxsidebarwrapper { 
+    position: fixed;
+}
+
+#logo_container {
+    margin-top: 10px;
+    width: 230px;
+    height: 230px;
+}
+
+#logo_container img {
+    width: 100%;
+    height: auto;
+}
+
+div.footer {
+    bottom: 0px;
+    position: fixed;
+    background-color: #fff;
 }

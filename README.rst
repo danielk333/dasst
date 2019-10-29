@@ -1,6 +1,20 @@
 DASST
 =========
 
+feature list
+-------------
+
+* stuff
+
+simple example
+---------------
+
+
+.. code-block:python
+
+   import dasst
+
+
 to test
 -----------------
 

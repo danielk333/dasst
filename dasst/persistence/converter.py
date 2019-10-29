@@ -16,6 +16,9 @@ import struct
 
 
 def unpack(fmt, bytes_data):
+    '''Docstring
+
+    '''
     size = struct.calcsize(fmt)
     return struct.unpack(fmt, bytes_data[:size]), bytes_data[size:]
 
@@ -25,6 +28,9 @@ class ChainConverter:
 
     '''
     def pack_bytes_stream(self, objects, converters):
+        '''Docstring
+
+        '''
         bytes_stream = b''
         for item, converter in zip(objects, converters):
             byte_data = converter.as_bytes(item)
@@ -33,6 +39,9 @@ class ChainConverter:
         return bytes_stream
 
     def unpack_bytes_stream(self, converters, bytes_stream):
+        '''Docstring
+
+        '''
         objects = []
         for converter in converters:
             size, bytes_stream = unpack('q', bytes_stream)
