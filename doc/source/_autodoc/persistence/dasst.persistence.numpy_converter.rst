@@ -1,5 +1,5 @@
 numpy\_converter
-=====================================================================================
+================
 
 .. automodule:: dasst.persistence.numpy_converter
 
@@ -30,8 +30,10 @@ Contents
 .. rubric:: NumpyConverter
 
 .. autoclass:: NumpyConverter
+   :show-inheritance:
    :noindex:
    :members:
+   :inherited-members:
 
 
 

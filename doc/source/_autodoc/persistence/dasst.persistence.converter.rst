@@ -1,5 +1,5 @@
 converter
-=====================================================================================
+=========
 
 .. automodule:: dasst.persistence.converter
 
@@ -41,16 +41,20 @@ Contents
 .. rubric:: ChainConverter
 
 .. autoclass:: ChainConverter
+   :show-inheritance:
    :noindex:
    :members:
+   :inherited-members:
 
 
 
 .. rubric:: Converter
 
 .. autoclass:: Converter
+   :show-inheritance:
    :noindex:
    :members:
+   :inherited-members:
 
 
 

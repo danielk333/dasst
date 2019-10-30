@@ -1,5 +1,5 @@
-dasst.persistence.persistence.Persistence.save\_bytes
-=====================================================
+Persistence.save\_bytes
+=======================
 
 .. currentmodule:: dasst.persistence.persistence
 

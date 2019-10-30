@@ -1,5 +1,5 @@
-dasst.persistence.numpy\_converter.NumpyConverter.from\_bytes
-=============================================================
+NumpyConverter.from\_bytes
+==========================
 
 .. currentmodule:: dasst.persistence.numpy_converter
 

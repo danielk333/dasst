@@ -1,5 +1,5 @@
-dasst.persistence.persistence.Persistence.\_\_init\_\_
-======================================================
+Persistence.\_\_init\_\_
+========================
 
 .. currentmodule:: dasst.persistence.persistence
 

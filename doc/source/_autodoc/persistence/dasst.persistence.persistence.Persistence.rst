@@ -1,9 +1,10 @@
-dasst.persistence.persistence.Persistence
-=========================================
+Persistence
+===========
 
 .. currentmodule:: dasst.persistence.persistence
 
 .. autoclass:: Persistence
+   :show-inheritance:
 
    
    

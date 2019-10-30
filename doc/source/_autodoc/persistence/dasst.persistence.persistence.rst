@@ -1,5 +1,5 @@
 persistence
-=====================================================================================
+===========
 
 .. automodule:: dasst.persistence.persistence
 
@@ -39,8 +39,10 @@ Contents
 .. rubric:: Persistence
 
 .. autoclass:: Persistence
+   :show-inheritance:
    :noindex:
    :members:
+   :inherited-members:
 
 
 

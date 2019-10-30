@@ -1,8 +1,9 @@
-{{ fullname | escape | underline}}
+{{ name | escape | underline }}
 
 .. currentmodule:: {{ module }}
 
 .. autoclass:: {{ objname }}
+   :show-inheritance:
 
    {% block methods %}
    {% if methods %}

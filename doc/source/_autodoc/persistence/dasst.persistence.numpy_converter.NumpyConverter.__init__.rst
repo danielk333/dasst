@@ -1,5 +1,5 @@
-dasst.persistence.numpy\_converter.NumpyConverter.\_\_init\_\_
-==============================================================
+NumpyConverter.\_\_init\_\_
+===========================
 
 .. currentmodule:: dasst.persistence.numpy_converter
 

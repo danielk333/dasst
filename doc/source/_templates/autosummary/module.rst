@@ -1,5 +1,4 @@
-{{ name | escape }}
-=====================================================================================
+{{ name | escape | underline }}
 
 .. automodule:: {{ fullname }}
 
@@ -39,8 +38,10 @@ Contents
 .. rubric:: {{ class }}
 
 .. autoclass:: {{ class }}
+   :show-inheritance:
    :noindex:
    :members:
+   :inherited-members:
 
 {% endfor %}
 {% endif %}

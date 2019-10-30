@@ -1,9 +1,10 @@
-dasst.persistence.numpy\_converter.NumpyConverter
-=================================================
+NumpyConverter
+==============
 
 .. currentmodule:: dasst.persistence.numpy_converter
 
 .. autoclass:: NumpyConverter
+   :show-inheritance:
 
    
    

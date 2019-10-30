@@ -1,5 +1,5 @@
-dasst.persistence.persistence.Persistence.load
-==============================================
+Persistence.load
+================
 
 .. currentmodule:: dasst.persistence.persistence
 

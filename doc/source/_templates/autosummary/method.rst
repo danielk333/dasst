@@ -1,4 +1,4 @@
-{{ fullname | escape | underline }}
+{{ (class + '.' + name) | escape | underline }}
 
 .. currentmodule:: {{ module }}
 

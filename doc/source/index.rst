@@ -67,9 +67,18 @@ API Reference
 -------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   persistence
+   api
+
+
+Changelog
+-------------
+
+.. toctree::
+   :maxdepth: 1
+
+   changelog
 
 
 License

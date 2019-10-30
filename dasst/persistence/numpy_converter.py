@@ -27,8 +27,6 @@ class NumpyConverter(Converter):
     def as_bytes(self, obj: np.ndarray) -> bytes:
         '''Converts a :py:class:`numpy.ndarray` instance to a byte stream.
 
-            See :func:`dasst.persistence.converter.Converter.as_bytes`.
-
             :param numpy.ndarray obj: numpy array to be converted into a byte stream
             :rtype: bytes
             :return: byte stream representation of the numpy array
@@ -44,8 +42,6 @@ class NumpyConverter(Converter):
 
     def from_bytes(self, byte_data: bytes) -> np.ndarray:
         '''Converts a byte stream into :py:class:`numpy.ndarray` instance.
-
-            See :func:`dasst.persistence.converter.Converter.from_bytes`.
 
             :param bytes byte_data: byte stream to be converted into a numpy array
             :rtype: numpy.ndarray
