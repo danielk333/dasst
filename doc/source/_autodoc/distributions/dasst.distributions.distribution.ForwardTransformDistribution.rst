@@ -15,6 +15,8 @@ ForwardTransformDistribution
    
       ~ForwardTransformDistribution.__init__
       ~ForwardTransformDistribution.cdf
+      ~ForwardTransformDistribution.logcdf
+      ~ForwardTransformDistribution.logpdf
       ~ForwardTransformDistribution.pdf
       ~ForwardTransformDistribution.sample
       ~ForwardTransformDistribution.transform

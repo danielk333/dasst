@@ -22,19 +22,12 @@ Module summary
     
     NormDistribution
     
+    ScipyDistribution
+    
     UniformDistribution
     
 
 
-
-
-.. rubric:: Functions
-
-.. autosummary::
-    :toctree: .
-    
-    scipy_distribution_generator
-    
 
 
 
@@ -84,6 +77,16 @@ Contents
 
 
 
+.. rubric:: ScipyDistribution
+
+.. autoclass:: ScipyDistribution
+   :show-inheritance:
+   :noindex:
+   :members:
+   :inherited-members:
+
+
+
 .. rubric:: UniformDistribution
 
 .. autoclass:: UniformDistribution
@@ -93,13 +96,5 @@ Contents
    :inherited-members:
 
 
-
-
-
-.. rubric:: Functions
-
-
-.. autofunction:: scipy_distribution_generator
-   :noindex:
 
 

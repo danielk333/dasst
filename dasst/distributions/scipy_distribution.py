@@ -15,52 +15,60 @@ import scipy.stats as st
 from .distribution import Distribution
 
 
-def scipy_distribution_generator(name):
+class ScipyDistribution(Distribution):
+    '''Docstring
+    '''
 
-    class ScipyDistribution(Distribution):
+    def sample(self, shape: tuple, **kwargs) -> numpy.ndarray:
         '''Docstring
         '''
+        kwargs['size'] = shape
+        return self._scipy_dist.rvs(**kwargs)
 
-        def __init__(self):
-            self._scipy_dist = getattr(st, name)
-
-
-        def sample(self, shape: tuple, **kwargs) -> numpy.ndarray:
-            '''Docstring
-            '''
-            kwargs['size'] = shape
-            return self._scipy_dist.rvs(**kwargs)
-
-        def logcdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
-            '''Docstring
-            '''
-            return self._scipy_dist.logcdf(x, **kwargs)
+    def logcdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+        '''Docstring
+        '''
+        return self._scipy_dist.logcdf(x, **kwargs)
 
 
-        def logpdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
-            '''Docstring
-            '''
-            return self._scipy_dist.logpdf(x, **kwargs)
+    def logpdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+        '''Docstring
+        '''
+        return self._scipy_dist.logpdf(x, **kwargs)
 
 
-        def cdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
-            '''Docstring
-            '''
-            return self._scipy_dist.cdf(x, **kwargs)
+    def cdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+        '''Docstring
+        '''
+        return self._scipy_dist.cdf(x, **kwargs)
 
 
-        def pdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
-            '''Docstring
-            '''
-            return self._scipy_dist.pdf(x, **kwargs)
-
-    return ScipyDistribution
+    def pdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+        '''Docstring
+        '''
+        return self._scipy_dist.pdf(x, **kwargs)
 
 
-NormDistribution = scipy_distribution_generator('norm')
-UniformDistribution = scipy_distribution_generator('uniform')
-ExpDistribution = scipy_distribution_generator('expon')
-HalfNormDistribution = scipy_distribution_generator('halfnorm')
+
+class NormDistribution(ScipyDistribution):
+    def __init__(self):
+        self._scipy_dist = st.norm
+
+
+class UniformDistribution(ScipyDistribution):
+    def __init__(self):
+        self._scipy_dist = st.uniform
+
+
+class ExpDistribution(ScipyDistribution):
+    def __init__(self):
+        self._scipy_dist = st.expon
+
+
+class HalfNormDistribution(ScipyDistribution):
+    def __init__(self):
+        self._scipy_dist = st.halfnorm
+
 
 
 class CustomDiscreteDistribution(Distribution):

@@ -16,6 +16,8 @@ InverseTransformDistribution
       ~InverseTransformDistribution.__init__
       ~InverseTransformDistribution.cdf
       ~InverseTransformDistribution.cdf_inverse
+      ~InverseTransformDistribution.logcdf
+      ~InverseTransformDistribution.logpdf
       ~InverseTransformDistribution.pdf
       ~InverseTransformDistribution.sample
    
