@@ -33,11 +33,11 @@ Docstring for this example
     dat = np.random.randn(200)
 
     plt.plot(alt, dat)
-
+    plt.show()
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.126 seconds)
+   **Total running time of the script:** ( 0 minutes  0.132 seconds)
 
 
 .. _sphx_glr_download_auto_gallery_plot_example.py:

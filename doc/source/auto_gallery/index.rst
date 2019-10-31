@@ -30,6 +30,26 @@ Here the examples go
    :hidden:
 
    /auto_gallery/plot_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Docstring for this example">
+
+.. only:: html
+
+    .. figure:: /auto_gallery/images/thumb/sphx_glr_plot_custom_distribution_thumb.png
+
+        :ref:`sphx_glr_auto_gallery_plot_custom_distribution.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_gallery/plot_custom_distribution
 .. raw:: html
 
     <div style='clear:both'></div>

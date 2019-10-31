@@ -14,6 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import warnings
 import glob
 from datetime import date
 
@@ -39,6 +40,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinx.ext.doctest',
     'sphinx.ext.githubpages',
     'sphinx_gallery.gen_gallery',
 ]
@@ -67,6 +69,10 @@ sphinx_gallery_conf = {
      'filename_pattern': '/plot_',
 }
 
+# Remove matplotlib agg warnings from generated doc when using plt.show
+warnings.filterwarnings("ignore", category=UserWarning,
+    message='Matplotlib is currently using agg, which is a'
+            ' non-GUI backend, so cannot show the figure.')
 
 # -----------------------------------------------------------------------------
 # Intersphinx configuration

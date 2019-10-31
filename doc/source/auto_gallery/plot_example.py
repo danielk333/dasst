@@ -14,3 +14,4 @@ alt = np.linspace(77e3, 120e3, num=200)
 dat = np.random.randn(200)
 
 plt.plot(alt, dat)
+plt.show()
