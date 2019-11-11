@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''Converter abstract definition and converting helper functions
+'''Doc
 
 '''
 
