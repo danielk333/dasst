@@ -19,8 +19,8 @@ from dasst.persistence import register_converter, ChainConverter, Converter
 from dasst.profiling import set_loggers
 
 
-set_loggers(level=10, logfile = './')
-
+# set_loggers(level=10, logfile = './')
+set_loggers(level=10)
 
 class MyBase:
     pass
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     data = np.random.randn(5, 2)
 
-    fs = FileSystemBinary('test.bin')
+    fs = FileSystemBinary('test.bin', append=False)
 
     fs.save(data)
     new_data = fs.load()
@@ -82,8 +82,8 @@ if __name__ == '__main__':
     my_object = MyClass(1000)
     my_object.generate()
 
-    fs = FileSystemBinary('test2.bin')
-    fs_compressed = GZipBinary('test2.gz', level=9)
+    fs = FileSystemBinary('test2.bin', append=False)
+    fs_compressed = GZipBinary('test2.gz', level=9, append=False)
 
     fs.save(my_object)
     fs_compressed.save(my_object)

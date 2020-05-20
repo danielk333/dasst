@@ -15,7 +15,7 @@ data = np.random.randn(200)
 fs = FileSystemBinary('/tmp/dasst_example_cache.bin')
 fs.save(data)
 
-loaded_data = fs.load(data)
+loaded_data = fs.load()
 
 print('Reconstruction error:')
-print(np.mean(data - loaded_data))
+print(np.mean(data - loaded_data))ly
