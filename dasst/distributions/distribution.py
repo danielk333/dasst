@@ -6,9 +6,10 @@
 
 #Python standard import
 from abc import abstractmethod
+from typing import Union
 
 #Third party import
-import numpy
+import numpy as np
 
 #Local import
 
@@ -20,56 +21,56 @@ class Distribution:
     '''
 
     @abstractmethod
-    def sample(self, shape: tuple, **kwargs) -> numpy.ndarray:
+    def sample(self, size: Union[tuple,int], **kwargs) -> np.ndarray:
         '''Docstring
         '''
         pass
 
 
-    def cdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def cdf(self, x: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         raise NotImplementedError()
 
 
-    def logcdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def logcdf(self, x: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         raise NotImplementedError()
 
 
-    def pdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def pdf(self, x: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         raise NotImplementedError()
 
 
-    def logpdf(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def logpdf(self, x: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         raise NotImplementedError()
 
 
-class InverseTransformDistribution(Distribution):
+class InverseTransform(Distribution):
     '''Abstract distribution base class. 
     '''
 
-    def sample(self, shape: tuple, **kwargs) -> numpy.ndarray:
+    def sample(self, size: Union[tuple,int], **kwargs) -> np.ndarray:
         '''Docstring
         '''
-        samples = numpy.random.rand(*shape)
+        samples = np.random.rand(*size)
         samples = self.cdf_inverse(samples, **kwargs)
         return samples
 
 
     @abstractmethod
-    def cdf_inverse(self, p: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def cdf_inverse(self, p: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         pass
 
 
-class ForwardTransformDistribution(Distribution):
+class ForwardTransform(Distribution):
     '''Abstract distribution base class. 
     '''
 
@@ -78,16 +79,16 @@ class ForwardTransformDistribution(Distribution):
         self.base_kwargs = base_kwargs
 
 
-    def sample(self, shape: tuple, **kwargs) -> numpy.ndarray:
+    def sample(self, size: Union[tuple,int], **kwargs) -> np.ndarray:
         '''Docstring
         '''
-        samples = self.base_distribution.sample(shape, **self.base_kwargs)
+        samples = self.base_distribution.sample(size, **self.base_kwargs)
         samples = self.transform(samples, **kwargs)
         return samples
 
 
     @abstractmethod
-    def transform(self, x: numpy.ndarray, **kwargs) -> numpy.ndarray:
+    def transform(self, x: np.ndarray, **kwargs) -> np.ndarray:
         '''Docstring
         '''
         pass

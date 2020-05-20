@@ -3,11 +3,15 @@
 '''
 
 from .distribution import Distribution
-from .distribution import InverseTransformDistribution
-from .distribution import ForwardTransformDistribution
+from .distribution import InverseTransform
+from .distribution import ForwardTransform
 
-from .scipy_distribution import NormDistribution
-from .scipy_distribution import UniformDistribution
-from .scipy_distribution import ExpDistribution
-from .scipy_distribution import HalfNormDistribution
-from .scipy_distribution import CustomDiscreteDistribution
+from .scipy import Norm, MvnNorm
+from .scipy import Uniform
+from .scipy import Exp
+from .scipy import HalfNorm
+from .scipy import CustomDiscrete
+
+from .resampling import Resampling
+
+from .kernel_density_estimation import KernelDensityEstimation
