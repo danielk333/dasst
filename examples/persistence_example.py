@@ -18,4 +18,4 @@ fs.save(data)
 loaded_data = fs.load()
 
 print('Reconstruction error:')
-print(np.mean(data - loaded_data))ly
+print(np.mean(data - loaded_data))
