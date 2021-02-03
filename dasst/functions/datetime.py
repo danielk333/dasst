@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+''' REPLACE ALL THIS WITH ASTROPY
 
 '''
 
