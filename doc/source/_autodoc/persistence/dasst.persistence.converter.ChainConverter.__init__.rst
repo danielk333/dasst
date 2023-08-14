@@ -1,5 +1,5 @@
-dasst.persistence.converter.ChainConverter.\_\_init\_\_
-=======================================================
+ChainConverter.\_\_init\_\_
+===========================
 
 .. currentmodule:: dasst.persistence.converter
 

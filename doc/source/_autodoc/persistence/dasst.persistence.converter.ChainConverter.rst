@@ -1,9 +1,10 @@
-dasst.persistence.converter.ChainConverter
-==========================================
+ChainConverter
+==============
 
 .. currentmodule:: dasst.persistence.converter
 
 .. autoclass:: ChainConverter
+   :show-inheritance:
 
    
    

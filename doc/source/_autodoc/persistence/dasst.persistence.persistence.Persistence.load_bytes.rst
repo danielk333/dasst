@@ -1,5 +1,5 @@
-dasst.persistence.persistence.Persistence.load\_bytes
-=====================================================
+Persistence.load\_bytes
+=======================
 
 .. currentmodule:: dasst.persistence.persistence
 

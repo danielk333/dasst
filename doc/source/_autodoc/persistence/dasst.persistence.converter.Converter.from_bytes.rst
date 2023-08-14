@@ -1,5 +1,5 @@
-dasst.persistence.converter.Converter.from\_bytes
-=================================================
+Converter.from\_bytes
+=====================
 
 .. currentmodule:: dasst.persistence.converter
 

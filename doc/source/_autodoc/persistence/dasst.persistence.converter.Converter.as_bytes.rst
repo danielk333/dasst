@@ -1,5 +1,5 @@
-dasst.persistence.converter.Converter.as\_bytes
-===============================================
+Converter.as\_bytes
+===================
 
 .. currentmodule:: dasst.persistence.converter
 

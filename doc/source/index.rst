@@ -12,6 +12,22 @@ DASST
 
 DASST (pronounced "dust") stands for Dynamical Astronomy Statistical Simulations Toolbox and is an open-source software for scientific research concerning statistical simulations of dynamical astronomy.
 
+
+Feature list
+-------------
+
+**Statistical simulations**
+
+ * Direct Monte Carlo
+ * Markov Chain Monte Carlo
+ * Importance Sampling
+
+
+**Propagation**
+
+ * REBOUND
+
+
 Tutorial
 --------
 
@@ -21,6 +37,19 @@ Tutorials with worked examples and background information for most use cases.
    :maxdepth: 2
 
    tutorial/index
+
+
+
+Examples
+---------
+
+Example gallery of the different modular functionality of the toolbox.
+
+.. toctree::
+   :maxdepth: 2
+
+   auto_gallery/index
+
 
 
 Developer Documentation
@@ -37,12 +66,19 @@ If you're interested in contributing to the project or need to implement functio
 API Reference
 -------------
 
-The exact API of all functions and classes:
+.. toctree::
+   :maxdepth: 3
+
+   api
+
+
+Changelog
+-------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   persistence
+   changelog
 
 
 License

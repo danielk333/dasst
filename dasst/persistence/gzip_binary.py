@@ -13,26 +13,18 @@ import zlib
 
 
 #Local import
-from .persistence import Persistence
+from .file_system_binary import FileSystemBinary
 
 
-class GZipBinary(Persistence):
+class GZipBinary(FileSystemBinary):
 
-    def __init__(self, path, level, append=False):
-        self.path = path
+    def __init__(self, path, level, **kwargs):
         self.level = level
-        if append:
-            self.mode = 'a'
-        else:
-            self.mode = 'w'
+        super(GZipBinary, self).__init__(path, **kwargs)
 
 
-    def save_bytes(self, byte_data: bytes) -> NoReturn:
-        with open(self.path, self.mode + 'b') as fh:
-            fh.write(zlib.compress(byte_data, self.level))
+    def compress(self, byte_data: bytes) -> bytes:
+        return zlib.compress(byte_data, self.level)
 
-
-    def load_bytes(self) -> bytes:
-        with open(self.path,'rb') as fh:
-            byte_data = zlib.decompress(fh.read())
-        return byte_data
+    def decompress(self, byte_data: bytes) -> bytes:
+        return zlib.decompress(byte_data)

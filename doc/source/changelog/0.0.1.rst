@@ -1,0 +1,25 @@
+2019-01-01: `0.0.1-alpha <https://gitlab.irf.se/danielk/dasst/-/releases/0.0.1>`__
+==================================================================================
+
+Issues addressed
+----------------
+
+A total of 1 issue were resolved with this release.
+
+* `#1 <https://gitlab.irf.se/danielk/dasst/issues/1>`__: include __version__ in package
+
+
+Issues addressed
+----------------
+
+A total of 1 issue were resolved with this release.
+
+* `#1 <https://gitlab.irf.se/danielk/dasst/issues/1>`__: include __version__ in package
+
+
+Pull requests merged
+--------------------
+
+A total of 1 pull requests were merged for this release.
+
+* `#1 <https://gitlab.irf.se/danielk/dasst/pull/1>`__: MAINT: fixing documentation

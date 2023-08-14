@@ -14,6 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import warnings
 import glob
 from datetime import date
 
@@ -39,6 +40,9 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
+    'sphinx.ext.doctest',
+    'sphinx.ext.githubpages',
+    'sphinx_gallery.gen_gallery',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -59,6 +63,16 @@ master_doc = 'index'
 pygments_style = 'sphinx'
 
 
+sphinx_gallery_conf = {
+     'examples_dirs': '../../examples',   # path to your example scripts
+     'gallery_dirs': 'auto_gallery',  # path where to save gallery generated examples
+     'filename_pattern': '/plot_',
+}
+
+# Remove matplotlib agg warnings from generated doc when using plt.show
+warnings.filterwarnings("ignore", category=UserWarning,
+    message='Matplotlib is currently using agg, which is a'
+            ' non-GUI backend, so cannot show the figure.')
 
 # -----------------------------------------------------------------------------
 # Intersphinx configuration
@@ -91,6 +105,13 @@ html_theme_path = ['.']
 #html_logo = 'dasst.png'
 #html_favicon = 'dasst_fav.gif'
 
+# Theme options are theme-specific and customize the look and feel of a theme
+# further.  For a list of options available for each theme, see the
+# documentation.
+#html_theme_options = {
+#    'logo_only': True,
+#}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -100,9 +121,12 @@ html_static_path = ['_static']
 # to template names.
 html_sidebars = {
     '**': [
-        'globaltoc.html',
-        'localtoc.html',
-        'relations.html',
+        'logo.html',
+        'myglobaltoc.html',
+        'mylocaltoc.html',
+        #'globaltoc.html',
+        #'localtoc.html',
+        #'relations.html',
         'searchbox.html',
     ]
 }

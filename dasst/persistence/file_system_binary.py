@@ -17,7 +17,7 @@ from .persistence import Persistence
 
 class FileSystemBinary(Persistence):
 
-    def __init__(self, path, append=False):
+    def __init__(self, path, append=True):
         self.path = path
         if append:
             self.mode = 'a'
@@ -30,7 +30,11 @@ class FileSystemBinary(Persistence):
             fh.write(byte_data)
 
 
-    def load_bytes(self) -> bytes:
+    def load_bytes(self, offset: int, size: int) -> bytes:
         with open(self.path,'rb') as fh:
-            byte_data = fh.read()
+            fh.seek(offset, 0)
+            if size == 0:
+                byte_data = fh.read()
+            else:
+                byte_data = fh.read(size)
         return byte_data

@@ -1,5 +1,5 @@
-dasst.persistence.persistence.Persistence.save
-==============================================
+Persistence.save
+================
 
 .. currentmodule:: dasst.persistence.persistence
 

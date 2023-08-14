@@ -1,5 +1,5 @@
-dasst.persistence.converter.ChainConverter.pack\_bytes\_stream
-==============================================================
+ChainConverter.pack\_bytes\_stream
+==================================
 
 .. currentmodule:: dasst.persistence.converter
 

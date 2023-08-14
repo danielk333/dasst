@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+'''Converter abstract definition and converting helper functions
 
 '''
 
@@ -16,13 +16,21 @@ import struct
 
 
 def unpack(fmt, bytes_data):
+    '''Docstring
+
+    '''
     size = struct.calcsize(fmt)
     return struct.unpack(fmt, bytes_data[:size]), bytes_data[size:]
 
 
 class ChainConverter:
+    '''Chain conversion functions collected in class form.
 
+    '''
     def pack_bytes_stream(self, objects, converters):
+        '''Docstring
+
+        '''
         bytes_stream = b''
         for item, converter in zip(objects, converters):
             byte_data = converter.as_bytes(item)
@@ -31,6 +39,9 @@ class ChainConverter:
         return bytes_stream
 
     def unpack_bytes_stream(self, converters, bytes_stream):
+        '''Docstring
+
+        '''
         objects = []
         for converter in converters:
             size, bytes_stream = unpack('q', bytes_stream)
@@ -40,13 +51,31 @@ class ChainConverter:
 
 
 class Converter:
+    '''Abstract converter base class. 
+
+    Forces implementation of the :code:`as_bytes` and :code:`from_bytes` methods.
+
+    When this class is extended it should be done for a specific object type.
+    '''
 
     @abstractmethod
     def as_bytes(self, obj: object) -> bytes:
+        '''Converts a object to a byte stream.
+
+            :param object obj: Object to be converted into a byte stream
+            :rtype: bytes
+            :return: byte stream representation of the object
+        '''
         pass
 
 
     @abstractmethod
     def from_bytes(self, byte_data: bytes) -> object:
+        '''Converts a byte stream into a object.
+
+            :param bytes byte_data: byte stream to be converted into a object
+            :rtype: object
+            :return: Reconstructed object
+        '''
         pass
 

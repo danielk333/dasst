@@ -1,9 +1,11 @@
-{{ fullname | escape }}
-=====================================================================================
+{{ name | escape | underline }}
 
 .. automodule:: {{ fullname }}
 
 .. currentmodule:: {{ fullname }}
+
+Module summary
+--------------
 
 {% if classes %}
 .. rubric:: Classes
@@ -27,3 +29,29 @@
 
 {% endif %}
 
+Contents
+----------
+
+{% if classes %}
+{% for class in classes %}
+
+.. rubric:: {{ class }}
+
+.. autoclass:: {{ class }}
+   :show-inheritance:
+   :noindex:
+   :members:
+   :inherited-members:
+
+{% endfor %}
+{% endif %}
+
+{% if functions %}
+.. rubric:: Functions
+{% for function in functions %}
+
+.. autofunction:: {{ function }}
+   :noindex:
+
+{% endfor %}
+{% endif %}

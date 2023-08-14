@@ -1,6 +1,8 @@
-dasst.persistence.converter.unpack
-==================================
+unpack
+======
 
 .. currentmodule:: dasst.persistence.converter
+
+.. rubric:: unpack
 
 .. autofunction:: unpack

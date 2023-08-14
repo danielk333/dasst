@@ -1,9 +1,10 @@
-dasst.persistence.converter.Converter
-=====================================
+Converter
+=========
 
 .. currentmodule:: dasst.persistence.converter
 
 .. autoclass:: Converter
+   :show-inheritance:
 
    
    
