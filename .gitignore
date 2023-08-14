@@ -1,8 +1,12 @@
-# Compiled source #
-###################
+#documentation
+docs/source/_autodoc
+docs/build
 
 #Sublime
 *.sublime*
+
+#vscode
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
