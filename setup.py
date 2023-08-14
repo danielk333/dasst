@@ -1,60 +1,26 @@
-import os
 import setuptools
-from setuptools.command.develop import develop
-from setuptools.command.install import install
-import subprocess
+from distutils.core import Extension
+import pathlib
+import codecs
 
-class PostDevelopCommand(develop):
-    """Post-installation for development mode."""
-    
-
-    def run(self):
-
-        develop.run(self)
+HERE = pathlib.Path(__file__).resolve().parents[0]
 
 
-class PostInstallCommand(install):
-    """Post-installation for installation mode."""
-    
-
-    def run(self):
-
-        install.run(self)
-
-
-with open('README.rst', 'r') as fh:
-    long_description = fh.read()
-
-
-with open('requirements', 'r') as fh:
-    pip_req = fh.read().split('\n')
-    pip_req = [x.strip() for x in pip_req if len(x.strip()) > 0]
+def get_version(path):
+    with codecs.open(path, 'r') as fp:
+        for line in fp.read().splitlines():
+            if line.startswith('__version__'):
+                delim = '"' if '"' in line else "'"
+                return line.split(delim)[1]
+        else:
+            raise RuntimeError("Unable to find version string.")
 
 
 setuptools.setup(
-    name='dasst',
-    version='0.0.0',
-    long_description=long_description,
-    url='https://gitlab.irf.se/danielk/dasst',
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: GNU-GPLv3',
-        'Operating System :: OS Independent',
-    ],
-    install_requires=pip_req,
-    packages=setuptools.find_packages(),
-    package_data={
-        '': ['*.txt', '*.rst'],
+    version=get_version(HERE / 'src' / 'dasst' / 'version.py'),
+    package_dir={
+        "": "src"
     },
-    # metadata to display on PyPI
-    author='Daniel Kastinen',
-    author_email='daniel.kastinen@irf.se',
-    description='Dynamical Astronomy Statistical Simulations Toolbox',
-    license='GNU-GPLv3',
-    cmdclass={
-        'develop': PostDevelopCommand,
-        'install': PostInstallCommand,
-    },
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    packages=setuptools.find_packages(where="src"),
+    ext_modules=[],
 )
