@@ -38,3 +38,6 @@
 # - "zenith attraction removal"
 #
 # The wrapper and functions should be able to accomodate all these applicatons
+
+# TODO: for now just do this native version and fix a more advanced one later
+from .rebound_interface import Rebound

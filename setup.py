@@ -1,5 +1,5 @@
 import setuptools
-from distutils.core import Extension
+# from distutils.core import Extension
 import pathlib
 import codecs
 

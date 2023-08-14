@@ -13,5 +13,3 @@ from .numpy_converter import NumpyConverter
 
 from .file_system_binary import FileSystemBinary
 from .gzip_binary import GZipBinary
-
-from .logger import logger
