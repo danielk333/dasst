@@ -54,7 +54,7 @@ def Q_i(a, e, i):
         doi:10.1093/mnras/stt057
     """
     Q = a * (1 + e)
-    return np.logical_or(Q < 4.6, i > 75)
+    return np.logical_or(Q > 4.6, i > 75)
 
 
 def E_i(a, i):
