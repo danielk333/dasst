@@ -56,7 +56,7 @@ def profile():
 @check_yappi
 def get_profile(modules=None):
     if modules is None:
-        modules = ["pyant"]
+        modules = ["dasst"]
     stats = yappi.get_func_stats(
         filter_callback=lambda x: any(
             list(_path_to_module(x.module).startswith(mod) for mod in modules)
