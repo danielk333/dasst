@@ -3,16 +3,7 @@
 """Implementation of standard D-criteria
 
 """
-
-# Python standard import
-
-
-# Third party import
 import numpy as np
-
-import pyorb
-
-# Local import
 
 
 def D_SH(orb_a, orb_b):
