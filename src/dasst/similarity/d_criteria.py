@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-"""Implementation of standard D-criteria
-
-"""
+"""Implementation of standard D-criteria"""
 import numpy as np
 
 
