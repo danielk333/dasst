@@ -5,7 +5,7 @@ D criterion example
 Docstring for this example
 """
 from numpy import radians as rad
-import dasst.functions.d_criteria as dlib
+import dasst.similarity.d_criteria as dlib
 import pyorb
 
 G_au = pyorb.get_G(length="AU", mass="kg", time="s")
