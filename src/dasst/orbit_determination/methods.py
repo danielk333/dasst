@@ -143,9 +143,7 @@ def rebound_od(
             out_frame=frame_name,
         )
         results["radiant_obs_states_" + frame_name] = p_states_radiant
-        radiant = frames.cart_to_sph(
-            -1 * p_states_radiant[3:, :], degrees=True
-        )
+        radiant = frames.cart_to_sph(-1 * p_states_radiant[3:, :], degrees=True)
         # ra-dec radiant angles are measured from +x -> +y, not from +y -> +x
         radiant[0, :] = 90 - radiant[0, :]
 
@@ -156,9 +154,7 @@ def rebound_od(
             out_frame=frame_name,
         )
         results["radiant_orbit_states_" + frame_name] = p_zat_states_radiant
-        radiant_zat = frames.cart_to_sph(
-            -1 * p_zat_states_radiant[3:, :], degrees=True
-        )
+        radiant_zat = frames.cart_to_sph(-1 * p_zat_states_radiant[3:, :], degrees=True)
         # ra-dec radiant angles are measured from +x -> +y, not from +y -> +x
         radiant_zat[0, :] = 90 - radiant_zat[0, :]
 
@@ -167,7 +163,7 @@ def rebound_od(
 
         results["radiant_obs_" + frame_name] = radiant[:2, :]
         results["radiant_orbit_" + frame_name] = radiant_zat[:2, :]
-        results["radiant_sun_" + frame_name] = np.empty((2, ), dtype=np.float64)
+        results["radiant_sun_" + frame_name] = np.empty((2,), dtype=np.float64)
         if hasattr(sun_radiant, "lon"):
             results["radiant_sun_" + frame_name][0] = sun_radiant.lon.deg
             results["radiant_sun_" + frame_name][1] = sun_radiant.lat.deg
