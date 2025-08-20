@@ -1,7 +1,0 @@
-Changelog
-=========
-
-.. toctree::
-    :glob:
-
-    changelog/*
