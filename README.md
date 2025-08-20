@@ -10,24 +10,6 @@ TODO -- This is work in progress
    import dasst
 ```
 
-## Testing
-
-```bash
-   pytest
-```
-
-## Documentation
-
-```bash
-   cd doc; make html
-```
-
-## Installation
-
-```bash
-   pip install dasst
-```
-
 ## to cite
 
 ```
