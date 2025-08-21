@@ -7,11 +7,11 @@ Maintained and modified by Daniel Kastinen thereafter
 # by unit of time in all directions at distance rh in kg/s
 
 import numpy as np
-from . import constants as const
+import scipy.constants as const
 
 
 def W_Crifo1997(T):
-    return np.sqrt((const.GAMMA + 1) / (const.GAMMA - 1) * const.GAMMA * const.K_B * T / const.M_KG)
+    return np.sqrt((const.GAMMA + 1) / (const.GAMMA - 1) * const.GAMMA * const.k * T / const.M_KG)
 
 
 def A_func_Vaubaillon2005(x, s, a_1, a_2):

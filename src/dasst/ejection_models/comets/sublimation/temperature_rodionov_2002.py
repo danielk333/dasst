@@ -3,7 +3,7 @@ Maintained and modified by Daniel Kastinen thereafter
 """
 
 import numpy as np
-from . import constants as const
+import scipy.constants as const
 import scipy.special
 
 
@@ -16,7 +16,7 @@ def Psat_Panale1984(T):  # eq (7)
 
 
 def ZHK_Rodionov2002(T_ice):  # eq given after eq (97)
-    return Psat_Panale1984(T_ice) / np.sqrt(2 * np.pi * const.M_KG * const.K_B * T_ice)
+    return Psat_Panale1984(T_ice) / np.sqrt(2 * np.pi * const.M_KG * const.k * T_ice)
 
 
 def P_factor_Rodionov2002(M0, T_ice, T0):  # eq (96)
@@ -58,7 +58,7 @@ def T_ice_Energy_Budget_eq_Rodionov2002(T_ice, A, cosz, rh, f, M0):  # eq (7)
     F = F_Rodionov2002(A, cosz, rh)
     T0 = T0_Rodionov2002(M0, T_ice)  # eq (95)
     Z0 = Z0_Rodionov2002(M0, T_ice, T0)
-    return const.E * const.SIGMA * T_ice**4 + f * const.A_S * const.L_S_M * Z0 - F
+    return const.E * const.sigma * T_ice**4 + f * const.A_S * const.L_S_M * Z0 - F
 
 
 def T_ice_bisection_method(A, cosz, rh, f, M0, tol=1.48e-8):
