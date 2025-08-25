@@ -1,3 +1,7 @@
+def solar_zenith_angle_draw(n):
+    z = np.arccos(np.random.rand(n))
+    return np.degrees(z)
+
 
 def t_vs_z_plot(T, z, rh):
     valid = np.isfinite(T)
@@ -26,6 +30,8 @@ def vt_hist_plot(terminal_velocities, z, a_d, rh):
     plt.xlabel(r"Terminal velocity $V_\infty$ (m/s)", fontsize=18)
     plt.title(rf"$V_\infty$ distribtuion (for dust size = {a_d} and $r_h$ = {rh})", fontsize=20)
     return fig
+
+
 def terminal_velocity_histogram(terminal_velocity, comet_name):
     fig = plt.figure()
     plt.hist(terminal_velocity, bins="fd", color="white", edgecolor="black")

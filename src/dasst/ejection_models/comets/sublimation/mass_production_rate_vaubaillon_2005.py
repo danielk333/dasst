@@ -40,21 +40,20 @@ def Qm_Vaubaillon2005(T, s, a_1, a_2, a_star0, Afp0, A_phi, q, rh):
         / A_phi
         * A_func_Vaubaillon2005(4, s, a_1, a_2)
     )
-    return factor * (q / rh) ** const.VAR_INDEX
+    return factor * (q / rh) ** index_of_variation
 
 
-def factor_rh_func_Vaubaillon2005(q):
-    if const.VAR_INDEX != 1:
+def factor_rh_func_Vaubaillon2005(q, index_of_variation):
+    if index_of_variation != 1:
         factor_rh = (
-            q**const.VAR_INDEX
-            / (1 - const.VAR_INDEX)
-            * (3 ** (1 - const.VAR_INDEX) - q ** (1 - const.VAR_INDEX))
+            q**index_of_variation
+            / (1 - index_of_variation)
+            * (3 ** (1 - index_of_variation) - q ** (1 - index_of_variation))
         )
     else:
-        factor_rh = q**const.VAR_INDEX * np.log(3 / q)
+        factor_rh = q**index_of_variation * np.log(3 / q)
     return round(factor_rh, 3)
 
 
 def Mg_tot_Vaubaillon2005(factor_t, factor_rh, T, s, a_1, a_2, a_star0, Afp0, A_phi, q, rh):
     return factor_t * factor_rh * Qm_Vaubaillon2005(T, s, a_1, a_2, a_star0, Afp0, A_phi, q, rh)
-
