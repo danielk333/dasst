@@ -157,7 +157,7 @@ def gas_temperature_rodionov_2002(mach_number, ice_temperature, vapor_specific_h
 
 
 def input_radiation_flux_rodionov_2002(
-    effective_albedo, local_solar_zenith_cosine, heliocentric_distance, c_sun=dasst.constants.C_SUN
+    effective_albedo, local_solar_zenith_cosine, heliocentric_distance, solar_flux=dasst.constants.C_SUN
 ):
     """Radiation influx into the active part of the cometary nuclues
     (probably? #todo double check) (eq 6 in Rodionov 2002[^1]).
@@ -169,7 +169,7 @@ def input_radiation_flux_rodionov_2002(
     """
     return (
         (1 - effective_albedo)
-        * c_sun
+        * solar_flux
         * np.max(local_solar_zenith_cosine, 0)
         / (heliocentric_distance**2)
     )
@@ -186,7 +186,7 @@ def ice_temperature_energy_budget_rodionov_2002(
     vapor_specific_heats_ratio,
     gas_mean_molecular_mass,
 ):
-    """Local isothermal (ice temperature = dust temperature) energy budget, i.e. energy
+    """LHS of local isothermal (ice temperature = dust temperature) energy budget, i.e. energy
     'usage' in terms of gas sublimation, thermal radiation, and heat conduction as a result
     of an input energy (LHS of eq 7 in Rodionov 2002[^1]).
 
@@ -264,26 +264,32 @@ def solve_ice_temperature_rodionov_2002(
 
     #todo docstring with reference and description
     """
+    kw = {}
+    if maxiter is not None:
+        kw["maxiter"] = maxiter
 
-    root = scipy.optimize.brentq(
-        _ice_temperature_energy_budget_equation,
-        lower_bound,
-        upper_bound,
-        args=(
-            effective_albedo,
-            local_solar_zenith_cosine,
-            heliocentric_distance,
-            icy_area_fraction,
-            mach_number,
-            ice_latent_sublimation_heat,
-            emissivity,
-            ice_sublimation_coefficient,
-            heat_conduction_flux,
-            vapor_specific_heats_ratio,
-            gas_mean_molecular_mass,
-        ),
-        xtol=absolute_tolerance,
-        maxiter=maxiter,
-    )
+    try:
+        root = scipy.optimize.brentq(
+            _ice_temperature_energy_budget_equation,
+            lower_bound,
+            upper_bound,
+            args=(
+                effective_albedo,
+                local_solar_zenith_cosine,
+                heliocentric_distance,
+                icy_area_fraction,
+                mach_number,
+                ice_latent_sublimation_heat,
+                emissivity,
+                ice_sublimation_coefficient,
+                heat_conduction_flux,
+                vapor_specific_heats_ratio,
+                gas_mean_molecular_mass,
+            ),
+            xtol=absolute_tolerance,
+            **kw
+        )
+    except ValueError:
+        root = np.nan
 
     return root

@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 from scipy.optimize import brentq
 from dasst.ejection_models.comets.sublimation import temperature_rodionov_2002 as temp
@@ -29,9 +30,6 @@ def residual_Tice(T, E_in, f, M0):
 
 
 def solve_Tice(F, M0, f=1, Ti_lo=1, Ti_hi=600):
-    if F <= 0:
-        return np.nan
-
     return brentq(residual_Tice, Ti_lo, Ti_hi, args=(F, f, M0), xtol=1e-8, maxiter=200)
 
 
@@ -44,12 +42,14 @@ def TempMachF_plot_Rodionov2002(
 
     T0_map = np.full((nM0, nF), np.nan, dtype=float)
 
+    pbar = tqdm(total=len(M0_vals)*len(F_vals))
     for i, M0 in enumerate(M0_vals):
         for j, F in enumerate(F_vals):
             Ti = solve_Tice(F, M0, f=f)
+            pbar.update(1)
             if np.isfinite(Ti):
                 T0_map[i, j] = temp.gas_temperature_rodionov_2002(M0, Ti, gamma)
-
+    pbar.close()
     X, Y = np.meshgrid(F_vals / dasst.constants.C_SUN, M0_vals)
     fig, ax = plt.subplots()
     h = ax.contourf(X, Y, T0_map, levels=30, cmap="turbo")
