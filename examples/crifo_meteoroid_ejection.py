@@ -1,11 +1,11 @@
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from dasst.ejection_models.comets.sublimation import terminal_velocity_crifo_1997 as vel
-from dasst.ejection_models.comets.sublimation import temperature_rodionov_2002 as temp
+from dasst.ejection_models.comets import sublimation
 
 
 # TODO: re-create figure 7 of crifo 1997 with terminal velocities
+# TODO: write out parameters nicer
 
 
 def solar_zenith_angle_draw(n):
@@ -29,7 +29,7 @@ gamma = 4 / 3
 m_kg = 18 * 1.66053906660e-27
 rho_d = 1000  # dust density kg/m^3
 m_comet = 1.13e13
-rho_n = m_comet / (4/3 * np.pi * Rn**3)  # nucleus density kg/m^3
+rho_n = m_comet / (4 / 3 * np.pi * Rn**3)  # nucleus density kg/m^3
 
 z_vec = np.linspace(0, 90, num=1000)  # n number of solar zenith angles in degrees
 z_samp = solar_zenith_angle_draw(10_000)  # n number of solar zenith angles in degrees
@@ -41,14 +41,18 @@ def calc_ejection(z):
 
     T_ice = np.full(n, np.nan, dtype=np.float64)
     for i in tqdm(range(n), total=n):
-        T_ice[i] = temp.solve_ice_temperature_rodionov_2002(A, cosz[i], rh, f_rh, M0, gamma, m_kg)
-    T = temp.gas_temperature_rodionov_2002(M0, T_ice, gamma)  # initial gas temperature in K
+        T_ice[i] = sublimation.solve_ice_temperature_rodionov_2002(
+            A, cosz[i], rh, f_rh, M0, gamma, m_kg
+        )
+    T = sublimation.gas_temperature_rodionov_2002(M0, T_ice, gamma)  # initial gas temperature in K
 
     # Calculate the critical radius from Crifo's formula (1997)
-    critical_radius = vel.critical_radius_crifo_1997(f_rh, rh, T, Rn, cosz, A, gamma, m_kg, rho_d)
+    critical_radius = sublimation.critical_radius_crifo_1997(
+        f_rh, rh, T, Rn, cosz, A, gamma, m_kg, rho_d
+    )
 
     # Calculate the maximum particle size
-    max_particle = vel.maximum_particle_crifo_1997(
+    max_particle = sublimation.maximum_particle_crifo_1997(
         f_rh,
         rh,
         T,
@@ -62,7 +66,7 @@ def calc_ejection(z):
     )
 
     # Calculate the terminal velocity from Crifo's formula (1997) using the critical radius
-    terminal_velocities = vel.terminal_velocity_crifo_1997(
+    terminal_velocities = sublimation.terminal_velocity_crifo_1997(
         dust_radius, critical_radius, T, gamma, m_kg
     )
     return T_ice, T, critical_radius, terminal_velocities, max_particle

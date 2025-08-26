@@ -22,30 +22,38 @@ T = 175
 
 def get_vels(dist, dust_mass, zenith_angle):
 
-    massloss = sublimation.whipple_1951.dMdt(
+    massloss = sublimation.mass_loss_whipple_1951(
         dist * const.au,
         body_radius,
-        albedo=A,
+        nucleus_effective_albedo=A,
         solar_luminosity=4e26,
-        sublimation_heat=dasst.constants.L_S,
+        ice_latent_sublimation_heat=dasst.constants.L_S,
     )
-    vel_whipple = sublimation.whipple_1951.velocity(
+    vel_whipple = sublimation.terminal_velocity_whipple_1951(
         dist * const.au,
         body_radius,
         body_mass,
         particle_bulk_density,
         dust_mass,
         massloss,
-        gas_molecule_mass=m_kg,
+        gas_mean_molecule_mass=m_kg,
         surface_temperature_coeff=300,
         K_drag=26.0 / 9.0,
     )
 
     particle_radius = np.cbrt(3 / (4 * np.pi) * (dust_mass / particle_bulk_density))
-    critical_radius = sublimation.terminal_velocity_crifo_1997.critical_radius_crifo_1997(
-        f_rh, dist, T, body_radius, np.cos(np.radians(zenith_angle)), A, gamma, m_kg, particle_bulk_density
+    critical_radius = sublimation.critical_radius_crifo_1997(
+        f_rh,
+        dist,
+        T,
+        body_radius,
+        np.cos(np.radians(zenith_angle)),
+        A,
+        gamma,
+        m_kg,
+        particle_bulk_density,
     )
-    vel_crifo = sublimation.terminal_velocity_crifo_1997.terminal_velocity_crifo_1997(
+    vel_crifo = sublimation.terminal_velocity_crifo_1997(
         particle_radius, critical_radius, T, gamma, m_kg
     )
     return vel_whipple, vel_crifo
@@ -61,7 +69,8 @@ ax.legend()
 ax.set_xlabel("Heliocentric distance [AU]")
 ax.set_ylabel("Terminal ejection velocity [m/s]")
 ax.set_title(
-    f"Whipple 1951 vs Crifo 1997 dust ejection model - particle mass = {particle_mass:.2e} kg"
+    "Whipple 1951 vs Crifo 1997 dust ejection model - "
+    f"particle mass = {particle_mass:.2e} kg"
 )
 
 za2 = 80
@@ -76,6 +85,7 @@ ax.legend()
 ax.set_xlabel("Particle mass [kg]")
 ax.set_ylabel("Terminal ejection velocity [m/s]")
 ax.set_title(
-    f"Whipple 1951 vs Crifo 1997 dust ejection model - Heliocentric distance = {helio_distance:.2e} AU"
+    "Whipple 1951 vs Crifo 1997 dust ejection model - "
+    f"Heliocentric distance = {helio_distance:.2e} AU"
 )
 plt.show()

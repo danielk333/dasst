@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from scipy.optimize import brentq
-from dasst.ejection_models.comets.sublimation import temperature_rodionov_2002 as temp
+from dasst.ejection_models.comets import sublimation
 import dasst.constants
 
 
@@ -15,7 +15,7 @@ m_kg = 18 * 1.66053906660e-27
 
 
 def residual_Tice(T, E_in, f, M0):
-    E_out = temp.ice_temperature_energy_budget_rodionov_2002(
+    E_out = sublimation.ice_temperature_energy_budget_rodionov_2002(
         T,
         f,
         dasst.constants.L_S,
@@ -48,7 +48,7 @@ def TempMachF_plot_Rodionov2002(
             Ti = solve_Tice(F, M0, f=f)
             pbar.update(1)
             if np.isfinite(Ti):
-                T0_map[i, j] = temp.gas_temperature_rodionov_2002(M0, Ti, gamma)
+                T0_map[i, j] = sublimation.gas_temperature_rodionov_2002(M0, Ti, gamma)
     pbar.close()
     X, Y = np.meshgrid(F_vals / dasst.constants.C_SUN, M0_vals)
     fig, ax = plt.subplots()

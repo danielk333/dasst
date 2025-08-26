@@ -10,21 +10,21 @@ body_mass = 10e4
 particle_bulk_density = 1e3
 particle_mass = 1e-7
 
-massloss = sublimation.whipple_1951.dMdt(
+massloss = sublimation.mass_loss_whipple_1951(
     helio_distance * constants.au,
     body_radius,
-    albedo=0.2,
+    nucleus_effective_albedo=0.2,
     solar_luminosity=4e26,
-    sublimation_heat=1.88e6,
+    ice_latent_sublimation_heat=1.88e6,
 )
-vel = sublimation.whipple_1951.velocity(
+vel = sublimation.terminal_velocity_whipple_1951(
     helio_distance * constants.au,
     body_radius,
     body_mass,
     particle_bulk_density,
     particle_mass,
     massloss,
-    gas_molecule_mass=20 * 1.661e-24 * 1e-3,
+    gas_mean_molecule_mass=20 * 1.661e-24 * 1e-3,
     surface_temperature_coeff=300,
     K_drag=26.0 / 9.0,
 )

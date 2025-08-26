@@ -9,6 +9,12 @@ C_SUN = 1353  # W/m^2
 #todo citation?
 """
 
+L_SUN = 4e26
+"""Solar luminosity in J/s
+
+#todo citation
+"""
+
 L_S = 2.833e6  # J/kg
 """Ice latent heat of sublimation J/kg
 
