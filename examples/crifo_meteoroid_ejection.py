@@ -25,7 +25,8 @@ A = 0.04  # albedo
 gamma = 4 / 3
 m_kg = 18 * 1.66053906660e-27
 rho_d = 1000  # dust density kg/m^3
-rho_n = 1.13e13 / (4/3 * np.pi * Rn**3)  # nucleus density kg/m^3
+m_comet = 1.13e13
+rho_n = m_comet / (4/3 * np.pi * Rn**3)  # nucleus density kg/m^3
 
 z_vec = np.linspace(0, 90, num=1000)  # n number of solar zenith angles in degrees
 z_samp = solar_zenith_angle_draw(10_000)  # n number of solar zenith angles in degrees
@@ -55,7 +56,7 @@ def calc_ejection(z):
         gamma,
         m_kg,
         rho_d,
-        rho_n,
+        m_comet,
     )
 
     # Calculate the terminal velocity from Crifo's formula (1997) using the critical radius
@@ -71,6 +72,7 @@ _, _, _, V_inf_samp, _ = calc_ejection(z_samp)
 valid_T = np.isfinite(T)
 valid_V = np.isfinite(terminal_velocities)
 valid_max = np.isfinite(max_particle)
+valid_star = np.isfinite(critical_radius)
 
 fig, ax = plt.subplots()
 ax.plot(z_vec[valid_T], T[valid_T])
@@ -85,10 +87,16 @@ ax.set_ylabel(r"Terminal velocity $V_\infty$ (m/s)", fontsize=18)
 ax.set_title(rf"$V_\infty$ vs $z$ (for dust size = {dust_radius} and $r_h$ = {rh})", fontsize=20)
 
 fig, ax = plt.subplots()
+ax.semilogy(z_vec[valid_star], critical_radius[valid_star])
+ax.set_xlabel(r"Solar zenith angle $z$ (deg)", fontsize=18)
+ax.set_ylabel(r"Critical radius $a_\star$ (m)", fontsize=18)
+ax.set_title(rf"$a_M$ vs $z$ ($r_h$ = {rh})", fontsize=20)
+
+fig, ax = plt.subplots()
 ax.semilogy(z_vec[valid_max], max_particle[valid_max])
 ax.set_xlabel(r"Solar zenith angle $z$ (deg)", fontsize=18)
 ax.set_ylabel(r"Maxumum ejecable particle $a_M$ (m)", fontsize=18)
-ax.set_title(rf"$T$ vs $z$ ($r_h$ = {rh})", fontsize=20)
+ax.set_title(rf"$a_M$ vs $z$ ($r_h$ = {rh})", fontsize=20)
 
 fig, ax = plt.subplots()
 ax.hist(V_inf_samp, bins=int(np.sqrt(len(V_inf_samp))))

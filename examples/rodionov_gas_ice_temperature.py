@@ -18,7 +18,7 @@ def residual_Tice(T, E_in, f, M0):
     E_out = temp.ice_temperature_energy_budget_rodionov_2002(
         T,
         f,
-        dasst.constants.L_S_M,
+        dasst.constants.L_S,
         alpha_S,
         M0,
         epsilon,

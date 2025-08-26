@@ -11,6 +11,7 @@
 Originally authored by Francisca Emel Tuzcuoglu during IRF internship 2025
 Maintained and modified by Daniel Kastinen thereafter
 
+#todo: verify all the equations with a test cast and implement as tests
 """
 
 import numpy as np
@@ -29,7 +30,7 @@ def maximum_particle_crifo_1997(
     vapor_specific_heats_ratio,
     gas_mean_molecular_mass,
     dust_mass_density,
-    nucleus_mass_density,
+    nucleus_mass,
     ice_latent_sublimation_heat=dasst.constants.L_S,
     ice_sublimation_coefficient=1.0,
     solar_flux=dasst.constants.C_SUN,
@@ -38,31 +39,31 @@ def maximum_particle_crifo_1997(
     lower than the gravitational attraction causing particles to fall back down onto the nucleus
     (Appendix E eq 23 in Crifo 2002[^1]).
 
-    #todo: bugfix this - something is wrong
-
     [^1]: Crifo, J. F. & Rodionov, A. V. The Dependence of the Circumnuclear Coma Structure
         on the Properties of the Nucleus I. Comparison between a Homogeneous and an Inhomogeneous
         Spherical Nucleus, with Application to P/Wirtanen. Icarus 127, 319–353 (1997).
 
     """
-    factor1 = (
-        (gas_mean_molecular_mass / const.m_u)
-        * (1 - albedo)
-        * solar_flux
-        / (
-            const.G
-            * dust_mass_density
-            * nucleus_mass_density
-            * nuclues_radius
-            * ice_sublimation_coefficient
-            * solar_flux
-        )
+    a_star = critical_radius_crifo_1997(
+        fraction_active_surface,
+        heliocentric_distance,
+        gas_temperature,
+        nuclues_radius,
+        local_solar_zenith_cosine,
+        albedo,
+        vapor_specific_heats_ratio,
+        gas_mean_molecular_mass,
+        dust_mass_density,
+        ice_latent_sublimation_heat=ice_latent_sublimation_heat,
+        ice_sublimation_coefficient=ice_sublimation_coefficient,
+        solar_flux=solar_flux,
     )
-    factor2 = np.sqrt(
-        const.k * gas_temperature / (2 * np.pi * (gas_mean_molecular_mass / const.m_u))
+    return (
+        a_star
+        * np.sqrt(vapor_specific_heats_ratio / (2 * np.pi))
+        * (const.k * gas_temperature * nuclues_radius)
+        / (gas_mean_molecular_mass * const.G * nucleus_mass)
     )
-    factor3 = fraction_active_surface * local_solar_zenith_cosine / heliocentric_distance**2
-    return (3 / np.pi) * factor1 * factor2 * factor3
 
 
 def critical_radius_crifo_1997(

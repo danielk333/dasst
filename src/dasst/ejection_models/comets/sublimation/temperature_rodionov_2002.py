@@ -157,7 +157,10 @@ def gas_temperature_rodionov_2002(mach_number, ice_temperature, vapor_specific_h
 
 
 def input_radiation_flux_rodionov_2002(
-    effective_albedo, local_solar_zenith_cosine, heliocentric_distance, solar_flux=dasst.constants.C_SUN
+    effective_albedo,
+    local_solar_zenith_cosine,
+    heliocentric_distance,
+    solar_flux=dasst.constants.C_SUN,
 ):
     """Radiation influx into the active part of the cometary nuclues
     (probably? #todo double check) (eq 6 in Rodionov 2002[^1]).
@@ -207,7 +210,10 @@ def ice_temperature_energy_budget_rodionov_2002(
     )
     return (
         emissivity * const.sigma * ice_temperature**4
-        + icy_area_fraction * ice_sublimation_coefficient * ice_latent_sublimation_heat * z_0
+        + icy_area_fraction
+        * ice_sublimation_coefficient
+        * (ice_latent_sublimation_heat * gas_mean_molecular_mass)
+        * z_0
         + heat_conduction_flux
     )
 
@@ -251,7 +257,7 @@ def solve_ice_temperature_rodionov_2002(
     mach_number,
     vapor_specific_heats_ratio,
     gas_mean_molecular_mass,
-    ice_latent_sublimation_heat=dasst.constants.L_S_M,
+    ice_latent_sublimation_heat=dasst.constants.L_S,
     emissivity=0.9,
     ice_sublimation_coefficient=1.0,
     heat_conduction_flux=0,
@@ -287,7 +293,7 @@ def solve_ice_temperature_rodionov_2002(
                 gas_mean_molecular_mass,
             ),
             xtol=absolute_tolerance,
-            **kw
+            **kw,
         )
     except ValueError:
         root = np.nan

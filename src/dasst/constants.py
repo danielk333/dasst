@@ -14,9 +14,3 @@ L_S = 2.833e6  # J/kg
 
 #todo citation?
 """
-
-L_S_M = L_S * 2.991e-26  # J/molecule
-"""Ice latent heat of sublimation J/molecule
-
-#todo citation?
-"""
