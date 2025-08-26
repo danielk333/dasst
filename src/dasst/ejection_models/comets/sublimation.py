@@ -567,7 +567,6 @@ def total_mass_loss_vaubaillon_2005(
     afp_0,
     observed_albedo,
     perihelion_distance,
-    heliocentric_distance,
     index_of_variation,
     max_activity_distance,
 ):
@@ -592,7 +591,7 @@ def total_mass_loss_vaubaillon_2005(
         afp_0,
         observed_albedo,
         perihelion_distance,
-        heliocentric_distance,
+        perihelion_distance,
         index_of_variation,
     )
     return outgassing_duration * factor_rh * q_m
