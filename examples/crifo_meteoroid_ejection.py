@@ -5,6 +5,9 @@ from dasst.ejection_models.comets.sublimation import terminal_velocity_crifo_199
 from dasst.ejection_models.comets.sublimation import temperature_rodionov_2002 as temp
 
 
+# TODO: re-create figure 7 of crifo 1997 with terminal velocities
+
+
 def solar_zenith_angle_draw(n):
     """Draws samples according to the area element of solar zenith angle for a spherical body"""
     z = np.arccos(np.random.rand(n))
@@ -45,7 +48,6 @@ def calc_ejection(z):
     critical_radius = vel.critical_radius_crifo_1997(f_rh, rh, T, Rn, cosz, A, gamma, m_kg, rho_d)
 
     # Calculate the maximum particle size
-    # todo: something wrong here
     max_particle = vel.maximum_particle_crifo_1997(
         f_rh,
         rh,

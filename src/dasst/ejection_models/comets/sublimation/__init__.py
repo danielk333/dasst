@@ -1,3 +1,3 @@
 from . import whipple_1951
-crifo_1997 = NotImplemented
-vaubaillon_2001 = NotImplemented
+from . import terminal_velocity_crifo_1997
+from . import temperature_rodionov_2002
