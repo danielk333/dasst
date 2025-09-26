@@ -29,6 +29,7 @@ dependencies = [
     "pandas >= 2.0.3",
     "pyorb >= 0.5.4",
     "astropy >= 5.3.1",
+    "jplephem >= 2.23",
     "rebound >= 4.4.2",
     "reboundx >= 4.2.2",
 ]
