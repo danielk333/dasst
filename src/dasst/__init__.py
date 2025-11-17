@@ -10,5 +10,4 @@ from . import plot
 from . import propagators
 from . import sampling
 
-from . import frames
 from . import time_utils

@@ -9,17 +9,17 @@ rh = np.linspace(q, 3, 1000)
 # todo: there is something wrong with the calculation, some parameters are missing, need testing!
 print("warning - not yet working")
 
-min_size, max_size = 0.1e-3, 0.5e-3
+min_size, max_size = 1e-4, 1e-1
 size_index = 3
 active_fraction = 0.24
 nucleus_radius = 1.8e3
-nucleus_geometric_albedo = 0.04
+nucleus_geometric_albedo = 0.04  # ??? what should this be?
 mach_number = 1
-afp_0 = 78.9  # cm
+afp_0 = 78.9e-2  # cm
 observed_albedo = 0.24
 gamma = 4 / 3
 m_kg = 18 * 1.66053906660e-27
-dust_density = 1e3
+dust_density = 2e3
 alpha_coef = 1.2
 index_of_variation = 2.025
 

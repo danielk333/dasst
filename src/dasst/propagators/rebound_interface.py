@@ -6,13 +6,12 @@ import pathlib
 
 import numpy as np
 from tqdm import tqdm
+import spacecoords.celestial as cel
 
 try:
     import rebound
 except ImportError:
     rebound = None
-
-from .. import frames
 
 
 class Rebound:
@@ -122,7 +121,7 @@ class Rebound:
         if init_massive_states is None:
             bodies = self.settings["massive_objects"]
             assert "Sun" in bodies, "Sun not included, aborting"
-            states = frames.get_solarsystem_body_states(
+            states = cel.get_solarsystem_body_states(
                 bodies=bodies,
                 epoch=epoch,
                 kernel=str(kpath),
@@ -265,10 +264,10 @@ class Rebound:
         if isinstance(m, float) or isinstance(m, int):
             m = np.zeros((N_testparticle,), dtype=np.float64) * m
 
-        if frames.is_geocentric(self.settings["in_frame"]):
+        if cel.is_geocentric(self.settings["in_frame"]):
             earth_state = self._get_earth_state()
 
-            state0_cart = frames.convert(
+            state0_cart = cel.convert(
                 epoch,
                 state0_cart,
                 in_frame=self.settings["in_frame"],
@@ -280,7 +279,7 @@ class Rebound:
             else:
                 state0_cart = state0_cart + earth_state
         else:
-            state0_cart = frames.convert(
+            state0_cart = cel.convert(
                 epoch,
                 state0_cart,
                 in_frame=self.settings["in_frame"],
@@ -322,7 +321,7 @@ class Rebound:
                 massive_states, states, ti
             )
 
-            if frames.is_geocentric(self.settings["out_frame"]):
+            if cel.is_geocentric(self.settings["out_frame"]):
                 earth_state = self._get_earth_state()
                 states[:, ti, :] -= earth_state[:, None]
                 massive_states[:, ti, :] -= earth_state[:, None]
@@ -353,13 +352,13 @@ class Rebound:
         t_restore = t_restore[0:end_ind]
         states = states[:, 0:end_ind, :]
 
-        if frames.is_geocentric(self.settings["out_frame"]):
+        if cel.is_geocentric(self.settings["out_frame"]):
             int_frame_ = self.geo_internal_frame
         else:
             int_frame_ = self.internal_frame
 
         for ni in range(N_testparticle):
-            states[:, :, ni] = frames.convert(
+            states[:, :, ni] = cel.convert(
                 times,
                 states[:, :, ni],
                 in_frame=int_frame_,
@@ -375,7 +374,7 @@ class Rebound:
         massive_states = massive_states[:, 0:end_ind, :]
 
         for ni in range(self.N_massive):
-            massive_states[:, :, ni] = frames.convert(
+            massive_states[:, :, ni] = cel.convert(
                 times,
                 massive_states[:, :, ni],
                 in_frame=int_frame_,

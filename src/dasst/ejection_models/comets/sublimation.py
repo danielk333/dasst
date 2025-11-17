@@ -501,6 +501,38 @@ def j_vaubaillon_2005(
     return w / (alpha_coef * a_3 + beta_coef * _coefficient_I * a_35)
 
 
+def total_number_production_vaubaillon_2005(
+    gas_temperature,
+    dust_size_distribution_index,
+    lower_size_limit,
+    upper_size_limit,
+    critical_radius,
+    alpha_coef,
+    vapor_specific_heats_ratio,
+    gas_mean_molecule_mass,
+    afp_0,
+    observed_albedo,
+    perihelion_distance,
+    heliocentric_distance,
+    index_of_variation,
+):
+    """Total mass production from equation B.8 in Appendix B in Vaubaillon 2005.
+    """
+    j_func = j_vaubaillon_2005(
+        gas_temperature,
+        dust_size_distribution_index,
+        lower_size_limit,
+        upper_size_limit,
+        critical_radius,
+        alpha_coef,
+        vapor_specific_heats_ratio,
+        gas_mean_molecule_mass,
+    )
+    a_1 = a_x_vaubaillon_2005(1, dust_size_distribution_index, lower_size_limit, upper_size_limit)
+    factor = j_func * afp_0 / (2 * observed_albedo) * a_1
+    return factor * (perihelion_distance / heliocentric_distance) ** index_of_variation
+
+
 def total_mass_production_vaubaillon_2005(
     gas_temperature,
     dust_size_distribution_index,

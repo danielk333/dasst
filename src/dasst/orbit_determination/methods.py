@@ -11,12 +11,13 @@ import logging
 import numpy as np
 from astropy.time import TimeDelta
 import astropy.coordinates as coords
+import spacecoords.celestial as cel
+import spacecoords.spherical as sph
 from tqdm import tqdm
 
 import pyorb
 
 from ..propagators import Rebound
-from .. import frames
 
 logger = logging.getLogger(__name__)
 
@@ -136,25 +137,25 @@ def rebound_od(
     sun_radiant = coords.get_sun(epoch)
     for frame_name in radiant_out_frame:
 
-        p_states_radiant = frames.convert(
+        p_states_radiant = cel.convert(
             epoch,
             states,
             in_frame="ITRS",
             out_frame=frame_name,
         )
         results["radiant_obs_states_" + frame_name] = p_states_radiant
-        radiant = frames.cart_to_sph(-1 * p_states_radiant[3:, :], degrees=True)
+        radiant = sph.cart_to_sph(-1 * p_states_radiant[3:, :], degrees=True)
         # ra-dec radiant angles are measured from +x -> +y, not from +y -> +x
         radiant[0, :] = 90 - radiant[0, :]
 
-        p_zat_states_radiant = frames.convert(
+        p_zat_states_radiant = cel.convert(
             epoch + t[-1],
             results["hcrs_states"],
             in_frame="HCRS",
             out_frame=frame_name,
         )
         results["radiant_orbit_states_" + frame_name] = p_zat_states_radiant
-        radiant_zat = frames.cart_to_sph(-1 * p_zat_states_radiant[3:, :], degrees=True)
+        radiant_zat = sph.cart_to_sph(-1 * p_zat_states_radiant[3:, :], degrees=True)
         # ra-dec radiant angles are measured from +x -> +y, not from +y -> +x
         radiant_zat[0, :] = 90 - radiant_zat[0, :]
 
@@ -189,7 +190,7 @@ def rebound_od(
         for ind in range(num):
             if progress_bar:
                 pbar.update(1)
-            p_cart = frames.convert(
+            p_cart = cel.convert(
                 epoch + TimeDelta(t, format="sec"),
                 particle_states[:, :, ind],
                 in_frame="HCRS",
