@@ -1,0 +1,75 @@
+# Official language image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/python/tags/
+image: python:3.11
+
+stages:
+  - test
+  - release
+
+# Prepare the development environment
+.devsetup:
+  before_script:
+    - python -V
+    # Prepare and activate virtual env
+    - pip install -U pip
+    - python -m venv venv
+    - source venv/bin/activate
+    # install the package and develop dependencies
+    - pip install .[develop]
+
+#######################
+## Platforms testing ##
+
+pytest:
+  image: ghcr.io/astral-sh/uv:bookworm-slim
+  allow_failure: true
+  parallel:
+    matrix:
+      - VERSION: ["3.10", "3.11", "3.12", "3.13"]
+  script:
+    - uv python install $VERSION
+    - uv venv --seed --python $VERSION ./venv
+    - source venv/bin/activate
+    - pip install .[tests]
+    - pytest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+###############
+## Releasing ##
+
+# Compile documentation for publication
+pages:
+  stage: release
+  extends: .devsetup
+  script:
+    - mkdocs build --site-dir public
+  artifacts:
+    paths:
+      - public
+  only:
+    - tags
+
+# Build and check integrity of distribution
+# Then publish package on public PyPI
+pypi:
+  stage: release
+  extends: .devsetup
+  variables:
+    #Use a gitlab variable to securely store the token
+    PYPI_TOKEN: $PYPI_TOKEN
+  script:
+    - python -m build
+    - python -m twine check dist/*
+    # - python -m auditwheel repair dist/*.whl
+    # - mv -v dist/*tar.gz wheelhouse/
+    - >
+      TWINE_USERNAME=__token__
+      TWINE_PASSWORD=$PYPI_TOKEN
+      python -m twine upload dist/*
+      # python -m twine upload wheelhouse/*
+  artifacts:
+    paths:
+      - dist/*
+  only:
+    - tags
