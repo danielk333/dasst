@@ -3,8 +3,8 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dasst"
-description = "Dynamical Astronomy Statistical Simulations Toolbox"
+name = "pydasst"
+description = "Dynamical Astronomy Statistical Simulations Toolbox in Python"
 version = "0.1.0"
 readme = {file = "README.md", content-type = "text/markdown"}
 authors = [
