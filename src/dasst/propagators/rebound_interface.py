@@ -6,7 +6,10 @@ import pathlib
 
 import numpy as np
 from tqdm import tqdm
+from astropy.time import Time
 import spacecoords.celestial as cel
+from .spacecoords_patch import patch_spacecoords 
+patch_spacecoords()
 
 try:
     import rebound
@@ -112,20 +115,45 @@ class Rebound:
     def _setup_sim(self, epoch, init_massive_states=None):
         kpath = pathlib.Path(self.kernel_path)
         if init_massive_states is None:
-            assert kpath.is_file(), f'Could not find "{kpath}" kernel file.'
+            if kpath.is_file():
+                kernel_dir = kpath.parent
+            else:
+                kernel_dir = kpath
+            if not kernel_dir.is_dir():
+                raise NotADirectoryError(
+                    f"kernel_dir must be a directory, got {kernel_dir}"
+                )
+            #assert kpath.is_file(), f'Could not find "{kpath}" kernel file.'
 
         self.sim = rebound.Simulation()
         self.sim.units = ("m", "s", "kg")
         self.sim.integrator = self.settings["integrator"]
 
         if init_massive_states is None:
+            
+            # Ensure the time argument is array-like
+            if isinstance(epoch, Time) and epoch.isscalar:
+                t_query = Time([epoch])
+            else:
+                t_query = epoch
             bodies = self.settings["massive_objects"]
             assert "Sun" in bodies, "Sun not included, aborting"
+
+            # Query the state for each body individually
+            states = {}
+            for body in bodies:
+                states[body] = cel.get_solarsystem_body_state(
+                    body=body,
+                    time=t_query,
+                    kernel_dir=kernel_dir,
+                )
+            '''
             states = cel.get_solarsystem_body_states(
                 bodies=bodies,
                 epoch=epoch,
                 kernel=str(kpath),
             )
+            '''
 
             # Convert to HCRS
             for key in states:
