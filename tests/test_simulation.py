@@ -7,9 +7,9 @@ from dasst.simulation import Simulation
 from dasst.populations import PopulationConfig
 from dasst.constants import AU, YEAR
 
-SIM_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/sim_config.toml")
-BODIES_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/bodies_config.toml")
-POP_COMET = Path("/home/matej/Desktop/dasst/src/dasst/pop_comet.toml")
+SIM_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/configs/sim_config.toml")
+BODIES_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/configs/bodies_config.toml")
+POP_COMET = Path("/home/matej/Desktop/dasst/src/dasst/configs/pop_comet.toml")
 NPZ_PATH = Path("/home/matej/Desktop/dasst/comet_run1.npz")
 
 def plot_full_system(result: dict, sim: Simulation):
