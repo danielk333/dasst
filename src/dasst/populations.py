@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import annotations
-import toml
+import tomllib
 import numpy as np
 from pathlib import Path
 from dataclasses import dataclass
@@ -36,7 +36,8 @@ class PopulationConfig:
 
     @classmethod
     def from_toml(cls, path: str | Path) -> "PopulationConfig":
-        data = toml.load(str(path))
+        with open(path, "rb") as fh:
+            data = tomllib.load(fh)
         pop_cfg = data.get("population", {})
         if not pop_cfg:
             raise ValueError("TOML is missing [population] section.")

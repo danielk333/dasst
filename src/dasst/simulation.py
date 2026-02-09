@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import toml
+import tomllib
 import numpy as np
 from pathlib import Path
 from dasst.propagators import Rebound
@@ -67,7 +67,8 @@ class Simulation:
         Load configuration parameters from a single TOML file that contains both
         [simulation] and [bodies] sections.
         '''
-        data = toml.load(str(path))
+        with open(path, "r") as fh:
+            data = tomllib.load(fh)
         return cls._from_data_dict(data)
 
     @classmethod
@@ -78,8 +79,10 @@ class Simulation:
             -bodies_path which contains [bodies]
         '''
 
-        sim_data = toml.load(str(sim_path))
-        bodies_data = toml.load(str(bodies_path))
+        with open(sim_path, "rb") as fh:
+            sim_data = tomllib.load(fh)
+        with open(bodies_path, "rb") as fh:
+            bodies_data = tomllib.load(fh)
         data: Dict[str, Any] = {}
 
         if "simulation" not in sim_data:

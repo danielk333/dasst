@@ -113,17 +113,12 @@ class Rebound:
         )
 
     def _setup_sim(self, epoch, init_massive_states=None):
-        kpath = pathlib.Path(self.kernel_path)
+        kernel_dir = pathlib.Path(self.kernel_path)
         if init_massive_states is None:
-            if kpath.is_file():
-                kernel_dir = kpath.parent
-            else:
-                kernel_dir = kpath
             if not kernel_dir.is_dir():
                 raise NotADirectoryError(
                     f"kernel_dir must be a directory, got {kernel_dir}"
                 )
-            #assert kpath.is_file(), f'Could not find "{kpath}" kernel file.'
 
         self.sim = rebound.Simulation()
         self.sim.units = ("m", "s", "kg")
