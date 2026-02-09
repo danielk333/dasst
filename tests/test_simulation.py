@@ -1,16 +1,18 @@
 #!/usr/bin/env python
-
+import tempfile
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+
 from dasst.simulation import Simulation
 from dasst.populations import PopulationConfig
 from dasst.constants import AU, YEAR
 
-SIM_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/configs/sim_config.toml")
-BODIES_CONFIG = Path("/home/matej/Desktop/dasst/src/dasst/configs/bodies_config.toml")
-POP_COMET = Path("/home/matej/Desktop/dasst/src/dasst/configs/pop_comet.toml")
-NPZ_PATH = Path("/home/matej/Desktop/dasst/comet_run1.npz")
+CONFIG_PATH = Path(__file__).parent / "configs"
+
+SIM_CONFIG = CONFIG_PATH / "sim_config.toml"
+BODIES_CONFIG = CONFIG_PATH / "bodies_config.toml"
+POP_COMET = CONFIG_PATH / "pop_comet.toml"
 
 def plot_full_system(result: dict, sim: Simulation):
     """
@@ -268,8 +270,10 @@ def run_and_verify():
     plt.show()
 
 if __name__ == "__main__":
-    # Firs run using TOMLs and save to NPZ
-    run_and_save()
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        print('created temporary directory', tmpdirname)
+        # Firs run using TOMLs and save to NPZ
+        run_and_save()
 
-    # Secondly verify based on the NPZ
-    run_and_verify()
+        # Secondly verify based on the NPZ
+        run_and_verify()
