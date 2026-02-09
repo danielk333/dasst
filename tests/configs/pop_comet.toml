@@ -1,0 +1,32 @@
+[population]
+name   = "comet"
+frame  = "HCRS"
+mode   = "batch"
+source = "distribution"
+
+[population.distribution]
+type        = "normal"
+n_particles = 100
+
+# Mean state: 1 AU on +x, 34 km/s on +y
+mu = [
+  1.495978707e11,  # x [m] = 1 AU
+  0.0,             # y
+  0.0,             # z
+  0.0,             # vx
+  3.4e4,           # vy = 34 km/s
+  0.0              # vz
+]
+
+# Reasonable dispersions:
+#   ~0.01 AU in position (1.5e9 m) and 100 m/s in velocity
+cov = [
+    [ 2.25e18, 0.0,       0.0,       0.0,    0.0,    0.0],
+    [ 0.0,       2.25e18, 0.0,       0.0,    0.0,    0.0],
+    [ 0.0,       0.0,       2.25e18, 0.0,    0.0,    0.0],
+    [ 0.0,       0.0,       0.0,       1e4,    0.0,    0.0],   # (100 m/s)^2
+    [ 0.0,       0.0,       0.0,       0.0,    1e4,    0.0],
+    [ 0.0,       0.0,       0.0,       0.0,    0.0,    1e4],
+]
+
+birth_time = 0.0
