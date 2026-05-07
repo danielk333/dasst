@@ -178,6 +178,7 @@ def rebound_od(
         auto_update=True,
         degrees=True,
         num=len(t),
+        type="true",
     )
     if not isinstance(kepler_out_frame, list):
         kepler_out_frame = [kepler_out_frame]

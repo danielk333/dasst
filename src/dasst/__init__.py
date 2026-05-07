@@ -1,6 +1,3 @@
-'''This id doc for entire package
-
-'''
 from .version import __version__
 
 from . import ejection_models
