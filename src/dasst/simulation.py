@@ -6,7 +6,7 @@ from dasst.propagators import Rebound
 from astropy.time import Time, TimeDelta
 from dataclasses import dataclass, field
 from dasst.populations import PopulationConfig, realise_population
-from dasst.types import NDArray_6xN, NDArray_N
+from dasst.types import NDArray_6xN
 from typing import Dict,Any,Optional,List, Tuple
 
 
@@ -42,6 +42,10 @@ class SimConfig:
     reboundx: Dict[str, Any] = field(default_factory=dict)
     massive_objects: List[str] = field(default_factory=list)
     massive_masses: List[float] = field(default_factory=list) 
+    massive_radii: List[Optional[float]] = field(default_factory=list)
+
+    # Additional tracking logic
+    tracking: Dict[str, Any] = field(default_factory=dict)
     
 
     @property 
@@ -67,7 +71,7 @@ class Simulation:
         Load configuration parameters from a single TOML file that contains both
         [simulation] and [bodies] sections.
         '''
-        with open(path, "r") as fh:
+        with open(path, "rb") as fh:
             data = tomllib.load(fh)
         return cls._from_data_dict(data)
 
@@ -99,6 +103,7 @@ class Simulation:
         '''
         Parse the previously read parameters from TOMLs.
         '''
+
         sim_config = data.get("simulation", {})
         if not sim_config:
             raise ValueError("TOML file is missing [simulation] parameters!")
@@ -118,18 +123,46 @@ class Simulation:
         # ReboundX configuration 
         config.reboundx = sim_config.get("reboundx", {})
 
+        # Tracking
+        tracking = sim_config.get("rebound_tracking", {})
+        config.tracking = tracking
+
         # Bodies
         bodies = data.get("bodies", {})
         bodies_massive = bodies.get("massive", {})
+        bodies_collision_radius = bodies.get("collision_radius", {})
+
+        if not bodies_massive:
+            raise ValueError("TOML file is missing [bodies.massive] parameters.")
+        
+        if not isinstance(bodies_collision_radius, dict):
+            raise ValueError("[bodies.collision_radius] must be a table if provided.")
 
         # Map the body to its mass.
         #TODO Remove the requirement for Earth to be included in every case.
         config.massive_objects = list(bodies_massive.keys())
         config.massive_masses = [float(bodies_massive[name]) for name in config.massive_objects]
 
+        unknown_radius_bodies = set(bodies_collision_radius) - set(config.massive_objects)
+        if unknown_radius_bodies:
+            raise ValueError(
+                "[bodies.collision_radius] contains bodies not listed in [bodies.massive]:" \
+                f"{sorted(unknown_radius_bodies)}"
+            )
+        
+        config.massive_radii = [
+            float(bodies_collision_radius[name])
+            if name in bodies_collision_radius
+            else None
+            for name in config.massive_objects
+        ]
         return cls(config=config)
 
-    def create_simulation(self, use_reboundx: bool = True) -> Rebound:
+    def create_simulation(
+            self, 
+            use_reboundx: bool = True,
+            in_frame: str | None = None
+            ) -> Rebound:
         
         config = self.config
         massive_objects = config.massive_objects or Rebound.DEFAULT_MASSIVE
@@ -138,13 +171,16 @@ class Simulation:
         settings = dict(
             massive_objects = massive_objects,
             massive_masses = massive_masses,
-            in_frame = config.in_frame,
+            massive_radii=config.massive_radii or None,
+            in_frame = in_frame or config.in_frame,
             out_frame = config.out_frame,
             integrator = config.integrator,
             time_step = config.time_step,
             tqdm = config.tqdm
         )
         
+        settings.update(config.tracking)
+
         if use_reboundx and config.reboundx:
             print("ReboundX on!")
             settings["reboundx"] = config.reboundx
@@ -154,18 +190,48 @@ class Simulation:
     def propagate(
             self,
             states: NDArray_6xN,
-            ids: NDArray_N,
             frame: str,
             use_rebound: bool,
+            birth_times: Optional[np.ndarray] = None,
     ) -> Dict[str,Any]:
         
         config = self.config
         t = config.make_timeline()
         epoch = config.epoch
 
-        reb = self.create_simulation(use_reboundx=use_rebound)
+        n_particles = states.shape[1] if states.ndim > 1 else 1
+        
+        particle_hashes = (
+            Rebound.TEST_HASH_INIT + np.arange(n_particles, dtype=np.int64)
+        )
 
-        particles_states, massive_states = reb.propagate(t, states, epoch)
+        if birth_times is None:
+            birth_times = np.zeros(n_particles, dtype=float)
+        
+        else:
+            birth_times = np.asarray(birth_times, dtype=float)
+        
+        if birth_times.shape != (n_particles,):
+            raise ValueError(
+                f"Birth times must have shape ({n_particles},), got {birth_times.shape}"
+            )
+
+        if not np.all(np.isfinite(birth_times)):
+            raise ValueError(f"Birth times must be finite.")
+        
+        if np.any(birth_times < 0.0):
+            raise ValueError(f"Negative birth times are not allowed.")
+
+        reb = self.create_simulation(use_reboundx=use_rebound, in_frame=frame)
+
+        particles_states, massive_states = reb.propagate(
+            t, 
+            states, 
+            epoch,
+            birth_times=birth_times,
+            particle_hashes=particle_hashes,
+            )
+        
         if particles_states.ndim == 2:
             particles_states = particles_states[:,:,None]
         
@@ -173,47 +239,58 @@ class Simulation:
             t=t,
             epoch=epoch,
             particles_states=particles_states, # (6,T,N)
+            particle_birth_times=birth_times,
             massive_states = massive_states,
-            particle_ids=ids,
+            particle_hashes=particle_hashes,
             rebound=reb,
+            particle_events=reb.events,
         )
     
     def run(
         self,
         populations: Optional[List[PopulationConfig]] = None,
         states: Optional[NDArray_6xN] = None,
-        ids: Optional[NDArray_N] = None,
         frame: Optional[str] = None,
         use_rebound: bool = True,   
+        birth_times: Optional[np.ndarray] = None,
     ) -> Dict[str,Any]:
         
         if populations is not None:
             all_states_list: List[NDArray_6xN] = []
-            all_ids_list: List[NDArray_N] = []
+            all_birth_times_list: List[np.ndarray] = []
             offsets: Dict[str, Tuple[int,int]] = {}
             start=0
 
             for pop_config in populations:
-                pop_states, pop_ids, meta = realise_population(pop_config, self.rng)
+                pop_states, pop_birth_times, _ = realise_population(pop_config, self.rng)
+                
                 n = pop_states.shape[1]
                 end = start + n
 
                 offsets[pop_config.name] = (start,end)
                 all_states_list.append(pop_states)
-                all_ids_list.append(pop_ids)
+                all_birth_times_list.append(pop_birth_times)
+                
                 start = end
+
             if not all_states_list:
                 raise ValueError("No populations provided.")
             
             all_states = np.concatenate(all_states_list, axis=1) # (6,N_total)
-            all_ids = np.concatenate(all_ids_list,axis=0) # (N_total,)
+            all_birth_times = np.concatenate(all_birth_times_list, axis=0)
             
             #TODO They probably dont all have the same input frame
-            input_frame = populations[0].frame
+            #input_frame = populations[0].frame
+            frames = {pop_config.frame for pop_config in populations}
+            if len(frames) != 1:
+                raise NotImplementedError(
+                    f"Multiple population input frames not yet supported: {sorted(frames)}"
+                )
+            input_frame = next(iter(frames))
 
             ret = self.propagate(
                 states=all_states,
-                ids=all_ids,
+                birth_times=all_birth_times,
                 frame=input_frame,
                 use_rebound=use_rebound,
             )
@@ -225,41 +302,48 @@ class Simulation:
 
             # Split it back per population
             populations_out: Dict[str, NDArray_6xN] = {}
-            populations_ids: Dict[str, NDArray_N] = {}
+            populations_birth_times: Dict[str, np.ndarray] = {}
+            particle_hashes = ret["particle_hashes"]
+            populations_hashes: Dict[str, np.ndarray] = {}
+            particle_lookup: Dict[int, Dict[str,Any]] = {}
+
 
             for pop_config in populations:
                 name = pop_config.name
                 start, end = offsets[name]
                 populations_out[name] = particles_states[:,:, start:end]
-                populations_ids[name] = all_ids[start:end]
+                populations_birth_times[name] = all_birth_times[start:end]
+                populations_hashes[name] = particle_hashes[start:end]
+
+                for local_index, global_index in enumerate(range(start,end)):
+                    h = int(particle_hashes[global_index])
+                    particle_lookup[h] = dict(
+                        population=name,
+                        local_index=local_index,
+                        global_index=global_index,
+                    )
             
             return dict(
                 t=t,
                 epoch=epoch,
                 massive_states=massive_states,
                 populations=populations_out,
-                particles_ids=populations_ids,
+                populations_birth_times=populations_birth_times,
+                particle_hashes=populations_hashes,
+                particle_lookup=particle_lookup,
+                particle_events=ret["particle_events"],
             )
         
         if states is None:
             raise ValueError("Either populations or states must be provided")
-        
-        if ids is None:
-            n=states.shape[1]
-            ids = self.rng.integers(
-                low=0,
-                high=np.iinfo(np.uint64).max,
-                size=n,
-                dtype=np.uint64,
-            )
 
         if frame is None:
             frame = self.config.in_frame
         
         return self.propagate(
             states=states,
-            ids=ids,
             frame=frame,
+            birth_times=birth_times,
             use_rebound=use_rebound,
         )
 
