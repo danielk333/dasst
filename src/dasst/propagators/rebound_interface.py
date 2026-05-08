@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-"""Wrapper for the REBOUND propagator into SORTS format.
-"""
+"""Wrapper for the REBOUND propagator into SORTS format."""
+
 import pathlib
 import numpy as np
 from tqdm import tqdm
 from astropy.time import Time, TimeDelta
 import spacecoords.celestial as cel
 from ..events import ParticleEvent, write_events_jsonl
+
 try:
     import rebound
 except ImportError:
@@ -56,27 +57,24 @@ class Rebound:
         massive_objects=DEFAULT_MASSIVE,
         massive_masses=DEFAULT_MASSES,
         tqdm=True,
-
         # New settings for the events:
-        exit_max_distance = None, # meters
-        collision = None, #direct, line, tree from Rebound docs
-        
-        #TODO is this required?
-        collision_response = "log", # What to do after the collision? Maybe some other options
-        
-        massive_radii = None, # list[float]
-        default_particle_radius = 0.0, # meters
-        event_log_path = None,
+        exit_max_distance=None,  # meters
+        collision=None,  # direct, line, tree from Rebound docs
+        # TODO is this required?
+        collision_response="log",  # What to do after the collision? Maybe some other options
+        massive_radii=None,  # list[float]
+        default_particle_radius=0.0,  # meters
+        event_log_path=None,
     )
 
     MASSIVE_HASH_INIT = 1
     TEST_HASH_INIT = 1_000_000
 
     def __init__(self, kernel, settings=None):
-        self.sim = None
-        assert (
-            rebound is not None
-        ), "Rebound python package not found, try `pip install rebound`"
+        self.sim: rebound.Simulation | None = None
+        assert rebound is not None, (
+            "Rebound python package not found, try `pip install rebound`"
+        )
 
         self.settings = dict()
         self.settings.update(self.DEFAULT_SETTINGS)
@@ -117,21 +115,22 @@ class Rebound:
 
     def _event_epoch_convert(self, sim_time_sec: float) -> str:
         if self.current_epoch is None:
-            return ''
+            return ""
         return (self.current_epoch + TimeDelta(sim_time_sec, format="sec")).isot
 
-    def _log_event(self,
-                   *,
-                   sim_time_sec: float,
-                   event: str,
-                   reason: str,
-                   particle_hash: int,
-                   other_hash: int | None = None,
-                   other_name: str | None = None,
-                   x: float | None = None,
-                   y: float | None = None,
-                   z: float | None = None,
-                   ) -> None:
+    def _log_event(
+        self,
+        *,
+        sim_time_sec: float,
+        event: str,
+        reason: str,
+        particle_hash: int,
+        other_hash: int | None = None,
+        other_name: str | None = None,
+        x: float | None = None,
+        y: float | None = None,
+        z: float | None = None,
+    ) -> None:
         self.events.append(
             ParticleEvent(
                 sim_time_sec=sim_time_sec,
@@ -141,7 +140,9 @@ class Rebound:
                 particle_hash=particle_hash,
                 other_hash=other_hash,
                 other_name=other_name,
-                x=x,y=y,z=z,
+                x=x,
+                y=y,
+                z=z,
             )
         )
 
@@ -153,12 +154,12 @@ class Rebound:
 
             if response == "log":
                 return 0
-            
+
             if response == "remove_test":
                 return remove_code
 
             raise ValueError(f"Unknown collision response={response!r}")
-        
+
         def collision_resolve(sim_pointer, collision):
             sim = sim_pointer.contents
 
@@ -189,7 +190,7 @@ class Rebound:
                     y=p2.y,
                     z=p2.z,
                 )
-                return collision_return_helper(remove_code=2) 
+                return collision_return_helper(remove_code=2)
 
             # Case 2: p2 massive, p1 test particle.
             if p2_is_massive and not p1_is_massive:
@@ -282,13 +283,12 @@ class Rebound:
         massive_radii = self.settings.get("massive_radii")
 
         if init_massive_states is None:
-            
-            '''# Ensure the time argument is array-like
+            """# Ensure the time argument is array-like
             if isinstance(epoch, Time) and epoch.isscalar:
                 t_query = epoch
             else:
                 t_query = epoch
-            '''
+            """
             bodies = self.settings["massive_objects"]
             assert "Sun" in bodies, "Sun not included, aborting"
 
@@ -300,13 +300,13 @@ class Rebound:
                     time=epoch,
                     kernel_dir=kernel_dir,
                 )
-            '''
+            """
             states = cel.get_solarsystem_body_states(
                 bodies=bodies,
                 epoch=epoch,
                 kernel=str(kpath),
             )
-            '''
+            """
 
             # Convert to HCRS
             for key in states:
@@ -324,11 +324,7 @@ class Rebound:
 
             radius = None if massive_radii is None else massive_radii[i]
 
-            self._add_state(
-                state, 
-                self.planets_mass[body],
-                hash_value = h,
-                radius=radius)
+            self._add_state(state, self.planets_mass[body], hash_value=h, radius=radius)
 
         self.sim.N_active = self.N_massive
         self.sim.dt = self.settings["time_step"]
@@ -336,38 +332,37 @@ class Rebound:
         if self.settings.get("collision"):
             self.sim.collision = self.settings["collision"]
             self.sim.collision_resolve = self._make_collision_callback()
-        
+
         if self.settings.get("exit_max_distance") is not None:
             self.sim.exit_max_distance = float(self.settings["exit_max_distance"])
 
-    
     def _find_escaped_hash(self) -> list[int]:
 
         r_max = self.sim.exit_max_distance
-       
+
         if self.sim.exit_max_distance is None:
             return []
-        
+
         r_max = float(r_max)
         out: list[int] = []
 
         for i in range(self.N_massive, len(self.sim.particles)):
             p = self.sim.particles[i]
-            r = np.sqrt(p.x*p.x + p.y*p.y + p.z*p.z)
+            r = np.sqrt(p.x * p.x + p.y * p.y + p.z * p.z)
             if r > r_max:
                 out.append(int(p.hash.value))
         return out
 
     def _add_state(self, state, m, hash_value=None, radius=None):
         x, y, z, vx, vy, vz = state.flatten()
-        kwargs = dict(x=x,y=y,z=z,vx=vx,vy=vy,vz=vz,m=m)
+        kwargs = dict(x=x, y=y, z=z, vx=vx, vy=vy, vz=vz, m=m)
         if hash_value is not None:
             kwargs["hash"] = int(hash_value)
         if radius is not None:
             kwargs["r"] = float(radius)
         self.sim.add(**kwargs)
-        
-        '''self.sim.add(
+
+        """self.sim.add(
             x=x,
             y=y,
             z=z,
@@ -376,13 +371,9 @@ class Rebound:
             vz=vz,
             m=m,
         )
-        '''
+        """
 
-    def _convert_state_at_epoch(
-            self, 
-            state: np.ndarray, 
-            epoch: Time
-        ) -> np.ndarray:
+    def _convert_state_at_epoch(self, state: np.ndarray, epoch: Time) -> np.ndarray:
         """
         We need to convert particle state into the current simulation
         coordinate system.
@@ -401,7 +392,7 @@ class Rebound:
 
             earth_state = self._get_earth_state()
             return state_geo + earth_state
-        
+
         state_helio = cel.convert(
             epoch,
             state,
@@ -411,7 +402,6 @@ class Rebound:
 
         sun_state = self._get_helio_state()
         return state_helio + sun_state
-
 
     def termination_check(self, t, step_index, massive_states, particle_states):
         raise NotImplementedError(
@@ -479,25 +469,25 @@ class Rebound:
             N_testparticle = state0_cart.shape[1]
         else:
             N_testparticle = 1
-            state0_cart = state0_cart.reshape(6,1)
+            state0_cart = state0_cart.reshape(6, 1)
 
         birth_times = kwargs.get("birth_times", None)
 
-        # No birth times have been provided, 
+        # No birth times have been provided,
         # therefore all particles exist from start
         if birth_times is None:
             birth_times = np.zeros(N_testparticle, dtype=float)
         else:
             birth_times = np.asarray(birth_times, dtype=float)
-        
+
         if birth_times.shape != (N_testparticle,):
             raise ValueError(
                 f"Birth times must have shape ({N_testparticle},), got {birth_times.shape}"
             )
-        
+
         if not np.all(np.isfinite(birth_times)):
-            raise ValueError(f"Birth times must be finite.")
-        
+            raise ValueError("Birth times must be finite.")
+
         particle_hashes = kwargs.get("particle_hashes", None)
 
         if particle_hashes is None:
@@ -507,7 +497,7 @@ class Rebound:
             )
         else:
             particle_hashes = np.asarray(particle_hashes, dtype=np.int64)
-        
+
         if particle_hashes.shape != (N_testparticle,):
             raise ValueError(
                 f"particle_hashes must have shape ({N_testparticle},), got {particle_hashes.shape}"
@@ -524,8 +514,8 @@ class Rebound:
 
             if not np.all(t.sec >= 0):
                 raise NotImplementedError(
-            "Stream mode needs forward propagation forwards with times t >= 0."
-            )
+                    "Stream mode needs forward propagation forwards with times t >= 0."
+                )
 
         if not (np.all(t.sec <= 0) or np.all(t.sec >= 0)):
             states = np.empty((6, len(t), N_testparticle), dtype=np.float64)
@@ -558,24 +548,48 @@ class Rebound:
         t = t[t_order]
         times = times[t_order]
 
-        #init_massive_states = kwargs.get("massive_states", None)
+        # init_massive_states = kwargs.get("massive_states", None)
 
         self._setup_sim(epoch, init_massive_states=kwargs.get("massive_states", None))
+        assert self.sim is not None, "Simulation setup failed"
 
         m = kwargs.get("m", np.zeros((N_testparticle,), dtype=np.float64))
-        if isinstance(m, (float,int)):
+        if isinstance(m, (float, int)):
             m = np.zeros((N_testparticle,), dtype=np.float64) + float(m)
-        
+
         particle_radii = kwargs.get("particle_radii")
         if particle_radii is None:
             particle_radii = np.full(
                 N_testparticle,
                 float(self.settings.get("default_particle_radius", 0.0)),
                 dtype=float,
-                )
+            )
+
+        events = np.concat([t, birth_times])
+        output_time_index = np.concat(
+            [
+                np.arange(len(t)),
+                np.full(birth_times.shape, -1, dtype=np.int64),
+            ]
+        )
+        event_types = np.concat(
+            [
+                np.full(t.shape, 0, dtype=np.int32),
+                np.full(birth_times.shape, 1, dtype=np.int32),
+            ]
+        )
+        # TODO: use string enum for this
+        event_map: dict[str, int] = {
+            "output": 0,
+            "particle_birth": 1,
+        }
+        sorted_events = np.argsort(events)
+        events = events[sorted_events]
+        event_types = event_types[sorted_events]
+        output_time_index = output_time_index[sorted_events]
+
         # Batch mode
         if not stream_mode:
-
             if cel.is_geocentric(self.settings["in_frame"]):
                 earth_state = self._get_earth_state()
 
@@ -586,17 +600,7 @@ class Rebound:
                     out_frame=self.geo_internal_frame,
                 )
 
-                state0_cart_internal = state0_cart + earth_state[:,None]
-            
-
-                # This is already handled at the top of this function
-                # state0_cart should thus always have shape (6, N_test_particle)
-                '''
-                if len(state0_cart.shape) > 1:
-                    state0_cart = state0_cart + earth_state[:, None]
-                else:
-                    state0_cart = state0_cart + earth_state
-                '''
+                state0_cart_internal = state0_cart + earth_state[:, None]
             else:
                 state0_cart_internal = cel.convert(
                     epoch,
@@ -605,65 +609,45 @@ class Rebound:
                     out_frame=self.internal_frame,
                 )
 
-            
             for ni in range(N_testparticle):
                 h = int(particle_hashes[ni])
                 self.slot_from_hash[h] = ni
-                #h = self.TEST_HASH_INIT + ni
-                #self.slot_from_hash[h] = ni
+                # h = self.TEST_HASH_INIT + ni
+                # self.slot_from_hash[h] = ni
 
                 self._add_state(
-                    state0_cart_internal[:,ni],
+                    state0_cart_internal[:, ni],
                     m[ni],
-                    hash_value = h,
-                    radius = particle_radii[ni],
+                    hash_value=h,
+                    radius=particle_radii[ni],
                 )
-
-            '''
-            if len(state0_cart.shape) > 1:
-                for ni in range(N_testparticle):
-                    self._add_state(state0_cart[:, ni], m[ni])
-            else:
-            self._add_state(state0_cart, m[0])
-            '''
             self.sim.move_to_com()
 
         # Stream mode
         else:
-            #TODO
-            #We need to particles as they reach the individual birth times
+            # TODO
+            # make sure the coordinate system of added particles are correct
             self.sim.move_to_com()
-        
-        
-        
-        # Fix for backwards integration, Rebound cannot handle
-        # negative times as it is trivial to reverse time
-        # TODO: later version of rebound should handle this?
-        if backwards_integration:
-            for p_ in self.sim.particles:
-                p_.vx = -p_.vx
-                p_.vy = -p_.vy
-                p_.vz = -p_.vz
 
         massive_states = np.empty((6, len(t), self.N_massive), dtype=np.float64)
 
         states = np.full((6, len(t), N_testparticle), np.nan, dtype=np.float64)
-        
+
         end_ind = len(t)
 
         if self.settings["tqdm"]:
-            pbar = tqdm(total=len(t), desc="Integrating")
+            pbar = tqdm(total=len(events), desc="Integrating")
 
-        for ti in range(len(t)):
+        for ind, (event_t, event_type) in enumerate(zip(events, event_types)):
             try:
-                self.sim.integrate(t[ti].sec)
+                self.sim.integrate(event_t.sec)
+            # rebound.Collision is handled by the callback, only escape raises
             except rebound.Escape:
-                
                 escaped_hashes = self._find_escaped_hash()
-                
+
                 if not escaped_hashes:
                     raise
-                
+
                 for h in escaped_hashes:
                     p = self.sim.particles[rebound.hash(h)]
 
@@ -672,30 +656,33 @@ class Rebound:
                         event="escape",
                         reason="exit_max_distance_exceeded",
                         particle_hash=h,
-                        x=p.x, y=p.y, z=p.z,
-                        )
-                    
+                        x=p.x,
+                        y=p.y,
+                        z=p.z,
+                    )
+
                     self.sim.remove(hash=rebound.hash(h))
+                self.sim.integrate(event_t.sec)
+            if event_type == event_map["output"]:
+                ti = output_time_index[ind]
+                massive_states, states = self._put_simulation_state(
+                    massive_states, states, ti
+                )
 
-                self.sim.integrate(t[ti].sec)
-                
-
+                if cel.is_geocentric(self.settings["out_frame"]):
+                    earth_state = self._get_earth_state()
+                    states[:, ti, :] -= earth_state[:, None]
+                    massive_states[:, ti, :] -= earth_state[:, None]
+                else:
+                    sun_state = self._get_helio_state()
+                    states[:, ti, :] -= sun_state[:, None]
+                    massive_states[:, ti, :] -= sun_state[:, None]
+            elif event_type == event_map["particle_birth"]:
+                pass
+                # TODO: add state here
 
             if self.settings["tqdm"]:
                 pbar.update(1)
-
-            massive_states, states = self._put_simulation_state(
-                massive_states, states, ti
-            )
-
-            if cel.is_geocentric(self.settings["out_frame"]):
-                earth_state = self._get_earth_state()
-                states[:, ti, :] -= earth_state[:, None]
-                massive_states[:, ti, :] -= earth_state[:, None]
-            else:
-                sun_state = self._get_helio_state()
-                states[:, ti, :] -= sun_state[:, None]
-                massive_states[:, ti, :] -= sun_state[:, None]
 
             check_interval = ti % self.settings["termination_check_interval"] == 0
             if self.settings["termination_check"] and check_interval:
@@ -724,7 +711,7 @@ class Rebound:
         else:
             int_frame_ = self.internal_frame
 
-        '''
+        """
         for ni in range(N_testparticle):
             if not np.all(np.isnan(states[:,:,ni])):
                 states[:, :, ni] = cel.convert(
@@ -733,16 +720,16 @@ class Rebound:
                     in_frame=int_frame_,
                     out_frame=self.settings["out_frame"],
                     )
-        '''
+        """
 
-        # In stream mode, states before birth are NaN by design. 
+        # In stream mode, states before birth are NaN by design.
         for ni in range(N_testparticle):
-            valid = np.all(np.isfinite(states[:,:,ni]),axis=0)
+            valid = np.all(np.isfinite(states[:, :, ni]), axis=0)
 
             if np.any(valid):
-                states[:,valid,ni] = cel.convert(
-                    times, 
-                    states[:,valid,ni],
+                states[:, valid, ni] = cel.convert(
+                    times,
+                    states[:, valid, ni],
                     in_frame=int_frame_,
                     out_frame=self.settings["out_frame"],
                 )
