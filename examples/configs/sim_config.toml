@@ -3,7 +3,7 @@ sim_epoch   = "2025-01-01T00:00:00"
 sim_time    = 1577880000 # seconds
 dt          = 86400.0 # seconds
 integrator  = "IAS15"
-kernel_path = "/home/danielk/data/jpl/"
+kernel_path = "/home/matej/Desktop/dasst/"
 in_frame    = "HCRS"
 out_frame   = "HCRS"
 tqdm        = true
@@ -23,3 +23,10 @@ seed        = 1234
 
   [simulation.reboundx.particle_params.params]
   beta = 5e-2
+
+[simulation.rebound_tracking]
+exit_max_distance = 3.0e11  
+collision = "direct"
+collision_response = "remove_test"
+event_log_path = "/home/matej/Desktop/dasst/dasst_events.jsonl"
+default_particle_radius = 0.0

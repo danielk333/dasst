@@ -5,7 +5,7 @@ import tomllib
 import numpy as np
 from pathlib import Path
 from dataclasses import dataclass
-from dasst.types import NDArray_6xN, NDArray_N
+from dasst.types import NDArray_6xN
 from typing import Dict, Any, Optional, Literal, Tuple
 
 
@@ -17,8 +17,9 @@ class PopulationConfig:
     """
     name: str
     frame: str
-    # So far, only batch mode is implemented
+
     mode: Literal["batch", "stream"] 
+
     # Do we read from a distribution or a provided file?
     source: Literal["distribution", "file"] 
 
@@ -31,8 +32,10 @@ class PopulationConfig:
     # File based, path to .npy 
     states_file: Optional[str] = None 
 
-    # For future stream mode, seconds after simulation epoch
-    birth_time: float = 0.0 
+    # Stream mode birth-time handling
+    birth_time: float = 0.0 # The same for all
+    birth_times: Optional[np.ndarray] = None # Array or birth times?
+    birth_times_file: Optional[str] = None # Or given by a file?
 
     @classmethod
     def from_toml(cls, path: str | Path) -> "PopulationConfig":
@@ -46,6 +49,12 @@ class PopulationConfig:
         frame  = pop_cfg.get("frame", "HCRS")
         mode   = pop_cfg.get("mode", "batch")
         source = pop_cfg.get("source", "distribution")
+
+        if source not in ("distribution", "file"):
+            raise ValueError(f"Unknown source {source!r}")
+
+        if mode not in ("batch", "stream"):
+            raise ValueError(f"Unknown population mode {mode!r}")
 
         cfg = cls(
             name=name,
@@ -76,28 +85,37 @@ class PopulationConfig:
             cfg.states_file = pop_cfg["states_file"]
             cfg.birth_time  = float(pop_cfg.get("birth_time", 0.0))
 
-        else:
-            raise ValueError(f"Unknown source {source!r}")
+        cfg.birth_time = float(pop_cfg.get("birth_time", 0.0))
 
-        '''
-        # optional birth_time at the population level
-        if "birth_time" in pop_cfg:
-            cfg.birth_time = float(pop_cfg["birth_time"])
-        '''
+        if "birth_times" in pop_cfg:
+            cfg.birth_times = np.array(pop_cfg["birth_times"], dtype=float)
 
+        if "birth_times_file" in pop_cfg:
+            cfg.birth_times_file = pop_cfg["birth_times_file"]
+            
         return cfg
 
    
 def realise_population(
     pop_cfg: PopulationConfig,
     rng: np.random.Generator,
-) -> Tuple[NDArray_6xN, NDArray_N, Dict[str, Any]]:
+    ) -> Tuple[NDArray_6xN, np.ndarray, Dict[str, Any]]:
     
     '''
-    Given a PopulationConfig and RNG, generate 6xN states and N IDs.
+    Given a PopulationConfig and RNG, generate 6xN initial states,
+    and N birth times.
+
+    For batch mode, all birth times are/ought to be equal.
+    For stream mode, each particle can have its own birth time.
+    Particle identities are assigned later as REBOUND hashes.
     '''
-    if pop_cfg.mode != "batch":
-        raise NotImplementedError("Only batch mode supported for now.")
+
+    # Catch the exceptions early on
+    if pop_cfg.source not in ("distribution", "file"):
+        raise ValueError(f"Unknown source {pop_cfg.source!r}")
+    
+    if pop_cfg.mode not in ("batch", "stream"):
+        raise ValueError(f"Unknown population mode {pop_cfg.mode!r}")
     
     if pop_cfg.source == "distribution":
         if pop_cfg.dist_type == "normal":
@@ -116,20 +134,39 @@ def realise_population(
         states = np.load(pop_cfg.states_file)  # expecting (6, N)
         if states.shape[0] != 6:
             raise ValueError(f"States must be (6, N), got {states.shape}")
-    else:
-        raise ValueError(f"Unknown source {pop_cfg.source!r}")
     
-    # IDs
-    n = states.shape[1]
-    ids = rng.integers(
-        low=0,
-        high=np.iinfo(np.uint64).max,
-        size=n,
-        dtype=np.uint64,
-    )
+    n = states.shape[1] 
+
+    if pop_cfg.birth_times_file is not None:
+        birth_times = np.load(pop_cfg.birth_times_file).astype(float)
+    
+    elif pop_cfg.birth_times is not None:
+        birth_times = np.asarray(pop_cfg.birth_times)
+    
+    else:
+        birth_times = np.full(n, float(pop_cfg.birth_time), dtype=float)
+    
+    if birth_times.shape != (n,):
+        raise ValueError(
+            f"birth_times must have shape ({n},), got {birth_times.shape}"
+        )
+    
+    if not np.all(np.isfinite(birth_times)):
+        raise ValueError("birth_times must be all finite.")
+    
+    if pop_cfg.mode == "batch":
+        if not np.allclose(birth_times, birth_times[0]):
+            raise ValueError(
+                "Batch mode needs to have all particles with the same birth time."
+            )
+    
+    elif pop_cfg.mode == "stream":
+        pass
+
+    
     meta = dict(
         name=pop_cfg.name,
         frame=pop_cfg.frame,
         birth_time=pop_cfg.birth_time,
     )
-    return states, ids, meta
+    return states, birth_times, meta

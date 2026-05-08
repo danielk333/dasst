@@ -161,7 +161,7 @@ def run_and_save(output_file: Path) -> dict:
         population_name=comet_cfg.name,
     )
 
-    print(f"Saved NPZ to: {NPZ_PATH}")
+    print(f"Saved NPZ to: {output_file.resolve()}")
 
 # Load the NPZ, rerun from t=0 states and compare
 def run_and_verify(output_file: Path):
@@ -171,7 +171,7 @@ def run_and_verify(output_file: Path):
     sim2 = Simulation.from_tomls(SIM_CONFIG, BODIES_CONFIG)
 
     # Load the shared NPZ file
-    data = np.load(output_file, allow_pickle=True)
+    data = np.load(output_file.with_suffix(".npz"), allow_pickle=True)
     t_sec_saved = data["t_sec"] # (T,)
     epoch_str = data["epoch"].item() # string
     states_saved = data["states"] # (6, T, N)

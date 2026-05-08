@@ -3,4 +3,7 @@ Sun   = 1.98855e30
 Earth = 5.97219e24
 Mars = 6.4171e23
 
-
+[bodies.collision_radius]
+Sun = 6.96e8
+Earth = 1.47e9 # Hill radius
+Mars = 3.39e6

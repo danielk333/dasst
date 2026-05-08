@@ -3,6 +3,12 @@ name   = "comet"
 frame  = "HCRS"
 mode   = "batch"
 source = "distribution"
+birth_time = 0.0
+
+# Or for other options, we are gonna have
+# states_file which is .npy and then either
+# birth_times = [...] or birth_times_file 
+# being another npy file
 
 [population.distribution]
 type        = "normal"
@@ -29,4 +35,3 @@ cov = [
     [ 0.0,       0.0,       0.0,       0.0,    0.0,    1e4],
 ]
 
-birth_time = 0.0
