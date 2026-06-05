@@ -30,7 +30,7 @@ def K_i(a, e, i):
     return np.logical_or(K > 0, i > 75)
 
 
-def P_i(P, e, i):
+def P_i(a, e, i):
     """P-i criterion [1]
 
     ASSUMES UNITS in YEARS and DEGREES
@@ -40,7 +40,7 @@ def P_i(P, e, i):
         Mon. Not. R. Astron. Soc. 430, 2377-2389.
         doi:10.1093/mnras/stt057
     """
-    return np.logical_or(P * e > 2.5, i > 75)
+    return np.logical_or(a ** 1.5 * e > 2.5, i > 75)
 
 
 def Q_i(a, e, i):
